@@ -1,0 +1,104 @@
+---
+title: "Next.js 14 App Router 完全指南：从零到生产"
+date: "2024-03-15"
+summary: "深入探讨 Next.js 14 的 App Router 架构，涵盖服务端组件、流式渲染、数据获取模式等核心概念，帮助你构建现代化全栈应用。"
+tags: ["Next.js", "React", "TypeScript", "全栈开发"]
+author: "博客作者"
+---
+
+## 什么是 App Router？
+
+Next.js 13 引入、14 正式稳定的 **App Router** 是对原 Pages Router 的彻底革新。
+它基于 React Server Components（RSC）构建，带来了更好的性能和开发体验。
+
+### 核心概念对比
+
+| 特性 | Pages Router | App Router |
+|------|-------------|------------|
+| 默认组件类型 | 客户端组件 | 服务端组件 |
+| 数据获取 | `getServerSideProps` / `getStaticProps` | 直接 `async/await` |
+| 布局嵌套 | `_app.tsx` 单层 | 多层嵌套 `layout.tsx` |
+| 流式渲染 | 不支持 | 原生支持 |
+| 路由分组 | 不支持 | `(group)` 语法 |
+
+## 服务端组件 vs 客户端组件
+
+App Router 最大的变化是**默认所有组件都是服务端组件**。
+
+```tsx title="app/posts/page.tsx"
+// 这是一个服务端组件，可以直接 await 数据库查询
+// 无需 useEffect、无需 loading 状态
+export default async function PostsPage() {
+  // 直接在组件顶层 await，无样板代码
+  const posts = await db.post.findMany({ orderBy: { date: 'desc' } })
+
+  return (
+    <ul>
+      {posts.map(post => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+需要交互的组件才加上 `'use client'` 指令：
+
+```tsx title="components/LikeButton.tsx"
+'use client'
+
+import { useState } from 'react'
+
+export function LikeButton({ initialCount }: { initialCount: number }) {
+  const [count, setCount] = useState(initialCount)
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      ❤️ {count}
+    </button>
+  )
+}
+```
+
+## 数据获取新范式
+
+### 并行数据获取
+
+```tsx
+// 并发发起多个请求，不会串行等待
+async function Page() {
+  // 同时触发两个请求
+  const [user, posts] = await Promise.all([
+    fetchUser(),
+    fetchPosts(),
+  ])
+  return <Dashboard user={user} posts={posts} />
+}
+```
+
+### Suspense + 流式渲染
+
+```tsx
+import { Suspense } from 'react'
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      {/* 标题立即渲染，内容流式加载 */}
+      <h1>我的仪表盘</h1>
+      <Suspense fallback={<p>加载中...</p>}>
+        {children}
+      </Suspense>
+    </div>
+  )
+}
+```
+
+## 总结
+
+App Router 代表了 React 全栈开发的未来方向：
+- 减少客户端 JavaScript 体积
+- 更直观的数据获取方式
+- 更好的 SEO（服务端渲染默认）
+- 更细粒度的缓存控制
+
+从今天开始拥抱 App Router 吧！

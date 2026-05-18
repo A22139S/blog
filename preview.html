@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人博客模板 — 预览</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          primary: {
+            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe',
+            300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6',
+            600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { font-family: 'Inter', system-ui, sans-serif; box-sizing: border-box; }
+
+  /* ===== 全局主题变量 ===== */
+  :root {
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --tag-bg: rgba(59,130,246,0.1);
+    --tag-color: #2563eb;
+    --tag-badge-bg: #eff6ff;
+    --tag-item-bg: #f3f4f6;
+    --tag-item-border: #e5e7eb;
+    --tag-item-color: #374151;
+    --tag-count-bg: #e5e7eb;
+    --nav-bg: rgba(255,255,255,0.9);
+    --nav-border: #e5e7eb;
+    --footer-bg: #f9fafb;
+    --footer-border: #e5e7eb;
+    --footer-text: #6b7280;
+    --body-bg: #f8fafc;
+    --toc-bg: #ffffff;
+    --toc-border: #e5e7eb;
+    --prose-h: #111827;
+    --prose-p: #374151;
+    --prose-code-bg: #f3f4f6;
+    --prose-code-color: #db2777;
+    --nav-link: #6b7280;
+    --nav-link-hover: #374151;
+    --nav-tab-hover: #f3f4f6;
+    --post-nav-border: #e5e7eb;
+    --post-nav-title: #374151;
+    --pagination-bg: #ffffff;
+    --pagination-border: #e5e7eb;
+    --pagination-text: #6b7280;
+    --summary-bg: rgba(37,99,235,0.06);
+    --summary-text: #374151;
+    --article-sidebar-active-bg: #eff6ff;
+    --article-sidebar-active-text: #2563eb;
+    --filter-bg: #eff6ff;
+    --filter-text: #374151;
+  }
+
+  /* 深色主题变量覆盖 */
+  .dark {
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --tag-bg: rgba(59,130,246,0.2);
+    --tag-color: #93c5fd;
+    --tag-badge-bg: rgba(59,130,246,0.2);
+    --tag-item-bg: #1f2937;
+    --tag-item-border: #374151;
+    --tag-item-color: #d1d5db;
+    --tag-count-bg: #374151;
+    --nav-bg: rgba(3,7,18,0.85);
+    --nav-border: #374151;
+    --footer-bg: #030712;
+    --footer-border: #1f2937;
+    --footer-text: #6b7280;
+    --body-bg: #030712;
+    --toc-bg: #1f2937;
+    --toc-border: #374151;
+    --prose-h: #f9fafb;
+    --prose-p: #d1d5db;
+    --prose-code-bg: #1f2937;
+    --prose-code-color: #f87171;
+    --nav-link: #9ca3af;
+    --nav-link-hover: #e5e7eb;
+    --nav-tab-hover: #374151;
+    --post-nav-border: #374151;
+    --post-nav-title: #d1d5db;
+    --pagination-bg: #1f2937;
+    --pagination-border: #374151;
+    --pagination-text: #9ca3af;
+    --summary-bg: rgba(37,99,235,0.1);
+    --summary-text: #9ca3af;
+    --article-sidebar-active-bg: rgba(59,130,246,0.2);
+    --article-sidebar-active-text: #93c5fd;
+    --filter-bg: rgba(37,99,235,0.1);
+    --filter-text: #9ca3af;
+  }
+
+  body {
+    background: var(--body-bg);
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
+  }
+
+  /* ===== 导航栏 ===== */
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid var(--nav-border);
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 20px;
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; }
+  .nav-logo-icon {
+    width: 32px; height: 32px; background: #2563eb; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+  .nav-logo-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .nav-links { display: flex; align-items: center; gap: 4px; }
+  .nav-link {
+    padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; color: var(--nav-link);
+    text-decoration: none; background: transparent; border: none;
+  }
+  .nav-link:hover { background: var(--nav-tab-hover); color: var(--nav-link-hover); }
+  .nav-link.active { background: #2563eb; color: white; }
+  .nav-divider { width: 1px; height: 20px; background: var(--nav-border); margin: 0 8px; }
+  .theme-btn {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 16px;
+    transition: all 0.2s; line-height: 1;
+  }
+  .theme-btn:hover { border-color: #3b82f6; }
+
+  /* ===== 页面切换 ===== */
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== 文章卡片 ===== */
+  .post-card {
+    border-radius: 12px; border: 1px solid var(--card-border);
+    background: var(--card-bg); padding: 24px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .post-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+  .dark .post-card:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+  .post-card-title {
+    font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;
+    color: #3b82f6; cursor: pointer; text-decoration: none;
+  }
+  .dark .post-card-title { color: #93c5fd; }
+  .post-card-excerpt { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px; }
+
+  /* ===== 标签徽章 ===== */
+  .tag-badge {
+    display: inline-flex; align-items: center;
+    border-radius: 9999px; background: var(--tag-badge-bg);
+    padding: 2px 12px; font-size: 12px; font-weight: 500;
+    color: var(--tag-color); transition: background 0.2s;
+    cursor: pointer; text-decoration: none;
+  }
+  .tag-badge:hover { background: rgba(59,130,246,0.2); }
+
+  /* ===== 侧边栏卡片（使用 CSS 变量，主题自适应）===== */
+  .sidebar-card {
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    padding: 20px;
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .sidebar-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px;
+  }
+  .sidebar-bio { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+  .sidebar-link {
+    display: inline-block; margin-top: 12px; font-size: 13px;
+    font-weight: 500; color: #3b82f6; cursor: pointer; text-decoration: none;
+  }
+  .dark .sidebar-link { color: #60a5fa; }
+
+  /* ===== 标签云 ===== */
+  .tag-cloud-item {
+    cursor: pointer; text-decoration: none; transition: color 0.2s;
+    color: var(--text-secondary);
+  }
+  .tag-cloud-item:hover { color: #3b82f6; }
+  .dark .tag-cloud-item:hover { color: #60a5fa; }
+  .tag-cloud-item.active { color: #2563eb; font-weight: 600; }
+  .dark .tag-cloud-item.active { color: #60a5fa; }
+
+  /* ===== 标签筛选条 ===== */
+  .filter-bar {
+    background: var(--filter-bg);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .filter-bar .filter-label {
+    font-size: 14px;
+    color: var(--filter-text);
+  }
+  .filter-bar .filter-tag {
+    font-weight: 600;
+    color: #3b82f6;
+  }
+  .dark .filter-bar .filter-tag { color: #60a5fa; }
+  .filter-bar .filter-clear {
+    background: var(--card-bg);
+    border: none;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: background 0.2s;
+  }
+  .filter-bar .filter-clear:hover { background: var(--tag-item-bg); }
+
+  /* ===== 文章目录侧边栏 ===== */
+  .article-sidebar {
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    padding: 20px;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    transition: background 0.3s, border-color 0.3s;
+    scrollbar-width: thin;
+  }
+  .article-sidebar::-webkit-scrollbar { width: 4px; }
+  .article-sidebar::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 9999px; }
+  .article-sidebar-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  .article-sidebar-list { list-style: none; padding: 0; margin: 0; }
+  .article-sidebar-item {
+    display: block; padding: 8px 12px; border-radius: 6px;
+    font-size: 13px; line-height: 1.4; cursor: pointer;
+    text-decoration: none; transition: all 0.15s;
+    color: var(--text-secondary); margin-bottom: 2px;
+  }
+  .article-sidebar-item:hover {
+    color: var(--text-primary);
+    background: var(--tag-item-bg);
+  }
+  .article-sidebar-item.active {
+    color: var(--article-sidebar-active-text);
+    font-weight: 500;
+    background: var(--article-sidebar-active-bg);
+  }
+  .article-sidebar-date {
+    display: block; font-size: 11px; margin-top: 2px;
+    color: var(--text-muted);
+  }
+  .article-sidebar-item.active .article-sidebar-date {
+    color: var(--article-sidebar-active-text);
+  }
+
+  /* ===== 文章内 TOC ===== */
+  .inline-toc {
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background: var(--tag-item-bg);
+    padding: 16px;
+    margin-bottom: 32px;
+  }
+  .inline-toc-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .inline-toc-list {
+    display: flex; flex-wrap: wrap; gap: 4px 16px;
+    list-style: none; padding: 0; margin: 0;
+  }
+  .inline-toc-link {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    cursor: pointer; transition: color 0.2s;
+  }
+  .inline-toc-link:hover { color: #3b82f6; }
+  .dark .inline-toc-link:hover { color: #60a5fa; }
+  .inline-toc-link.sub { font-size: 12px; padding-left: 8px; }
+
+  /* ===== 代码块 ===== */
+  pre { background: #0d1117 !important; border-radius: 8px; padding: 16px; overflow-x: auto; margin: 16px 0; }
+  code { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 13px; }
+  .code-keyword { color: #ff7b72; }
+  .code-string { color: #a5d6ff; }
+  .code-comment { color: #8b949e; }
+  .code-type { color: #ffa657; }
+  .code-fn { color: #d2a8ff; }
+  .code-tag { color: #7ee787; }
+  .inline-code {
+    background: var(--prose-code-bg); color: var(--prose-code-color);
+    padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: monospace;
+  }
+
+  /* ===== 正文排版 ===== */
+  .prose-article h2 {
+    font-size: 1.375rem; font-weight: 700;
+    margin-top: 32px; margin-bottom: 12px;
+    color: var(--prose-h); padding-top: 4px;
+    border-top: 1px solid var(--card-border);
+    padding-top: 28px;
+  }
+  .prose-article h3 {
+    font-size: 1.125rem; font-weight: 700;
+    margin-top: 20px; margin-bottom: 8px; color: var(--prose-h);
+  }
+  .prose-article p {
+    line-height: 1.8; margin-bottom: 14px; color: var(--prose-p);
+  }
+  .prose-article ul { padding-left: 20px; margin-bottom: 14px; }
+  .prose-article li { margin-bottom: 6px; color: var(--prose-p); }
+  .prose-article strong { color: var(--text-primary); }
+
+  /* ===== 表格 ===== */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { padding: 10px 14px; border: 1px solid var(--card-border); text-align: left; font-size: 14px; color: var(--prose-p); }
+  th { background: var(--tag-item-bg); font-weight: 600; color: var(--text-primary); }
+
+  /* ===== 上下篇导航 ===== */
+  .post-nav-card {
+    border-radius: 10px; border: 1px solid var(--post-nav-border);
+    padding: 16px; cursor: pointer; transition: border-color 0.2s;
+    background: var(--card-bg);
+  }
+  .post-nav-card:hover { border-color: #3b82f6; }
+  .post-nav-label { font-size: 11px; color: var(--text-muted); }
+  .post-nav-title { font-size: 13px; font-weight: 500; color: var(--post-nav-title); margin-top: 4px; }
+
+  /* ===== 摘要块 ===== */
+  .summary-block {
+    margin-top: 20px; padding: 12px 16px;
+    border-left: 4px solid #3b82f6;
+    background: var(--summary-bg);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px; line-height: 1.7;
+    color: var(--summary-text);
+  }
+
+  /* ===== 页脚 ===== */
+  .site-footer {
+    border-top: 1px solid var(--footer-border);
+    background: var(--footer-bg);
+    padding: 28px 20px; margin-top: 60px;
+  }
+  .footer-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-text { font-size: 13px; color: var(--footer-text); }
+  .footer-link { font-size: 13px; color: var(--footer-text); cursor: pointer; }
+  .footer-link:hover { color: #3b82f6; }
+  .footer-sub { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 12px; }
+</style>
+</head>
+<body class="min-h-screen transition-colors duration-300">
+
+<!-- ===== 导航栏 ===== -->
+<header class="site-header">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">B</div>
+      <span class="nav-logo-name">我的技术博客</span>
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showPage('home',this)">首页</button>
+      <button class="nav-link" onclick="showPage('blog',this)">全部文章</button>
+      <button class="nav-link" onclick="showPage('article',this)">文章详情</button>
+      <button class="nav-link" onclick="showPage('about',this)">关于</button>
+      <div class="nav-divider"></div>
+      <button class="theme-btn" onclick="toggleTheme()" title="切换主题">🌙</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 首页（左侧：关于博主+头像，右侧：最近3篇文章）===== -->
+<div id="page-home" class="page active">
+  <div style="max-width:1280px;margin:0 auto;padding:48px 20px;">
+    <!-- 欢迎区 -->
+    <div style="text-align:center;margin-bottom:48px;">
+      <h1 style="font-size:2.5rem;font-weight:800;margin-bottom:12px;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">我的技术博客</h1>
+      <p style="color:var(--text-muted);font-size:1.1rem;">记录思考，分享成长</p>
+      <p style="color:var(--text-muted);font-size:0.875rem;margin-top:8px;">共 <span style="color:#3b82f6;font-weight:600;">3</span> 篇文章</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:288px 1fr;gap:32px;align-items:start;">
+      <!-- 左侧：关于博主 + 头像 -->
+      <aside>
+        <div class="sidebar-card" style="text-align:center;">
+          <!-- 头像 -->
+          <div style="width:96px;height:96px;border-radius:50%;margin:0 auto 16px;overflow:hidden;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;">
+            <img src="/images/avatar.jpg" alt="博客作者" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:2rem;color:white;font-weight:700;">博</span>
+          </div>
+          <h3 style="font-size:15px;font-weight:600;margin-bottom:4px;color:var(--text-primary);">博客作者</h3>
+          <p class="sidebar-bio">全栈工程师 · 技术爱好者 · 终身学习者</p>
+          <a class="sidebar-link" onclick="showPage('about',null)" style="margin-top:12px;">了解更多 →</a>
+        </div>
+      </aside>
+
+      <!-- 右侧：最近3篇文章 -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <h2 style="font-size:1.125rem;font-weight:600;color:var(--text-primary);">最近文章</h2>
+          <a onclick="showPage('blog',null)" style="cursor:pointer;font-size:13px;font-weight:500;color:#3b82f6;text-decoration:none;">查看全部 →</a>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="post-card">
+            <h2 style="margin-bottom:0;">
+              <a class="post-card-title" onclick="showPage('article',null)">Next.js 14 App Router 完全指南：从零到生产</a>
+            </h2>
+            <p class="post-card-excerpt">深入探讨 Next.js 14 的 App Router 架构，涵盖服务端组件、流式渲染、数据获取模式等核心概念…</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span class="tag-badge" onclick="showPage('blog',null)">#Next.js</span>
+                <span class="tag-badge" onclick="showPage('blog',null)">#React</span>
+                <span class="tag-badge" onclick="showPage('blog',null)">#TypeScript</span>
+              </div>
+              <span style="font-size:12px;color:var(--text-muted);">2024年3月15日 · 6 分钟阅读</span>
+            </div>
+          </div>
+
+          <div class="post-card">
+            <h2 style="margin-bottom:0;">
+              <a class="post-card-title" onclick="showPage('article',null)">TypeScript 泛型深度解析：从入门到优雅</a>
+            </h2>
+            <p class="post-card-excerpt">系统梳理 TypeScript 泛型的核心用法：约束、条件类型、infer 关键字、工具类型实现原理…</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;gap:6px;">
+                <span class="tag-badge" onclick="showPage('blog',null)">#TypeScript</span>
+                <span class="tag-badge" onclick="showPage('blog',null)">#类型系统</span>
+              </div>
+              <span style="font-size:12px;color:var(--text-muted);">2024年2月20日 · 5 分钟阅读</span>
+            </div>
+          </div>
+
+          <div class="post-card">
+            <h2 style="margin-bottom:0;">
+              <a class="post-card-title" onclick="showPage('article',null)">CSS 容器查询：告别媒体查询的响应式新时代</a>
+            </h2>
+            <p class="post-card-excerpt">容器查询（Container Queries）终于在所有主流浏览器落地稳定支持。本文带你从原理到实战…</p>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+              <div style="display:flex;gap:6px;">
+                <span class="tag-badge" onclick="showPage('blog',null)">#CSS</span>
+                <span class="tag-badge" onclick="showPage('blog',null)">#响应式设计</span>
+              </div>
+              <span style="font-size:12px;color:var(--text-muted);">2024年1月10日 · 4 分钟阅读</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 全部文章页（含标签筛选）===== -->
+<div id="page-blog" class="page">
+  <div style="max-width:896px;margin:0 auto;padding:48px 20px;">
+    <header style="margin-bottom:36px;">
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:8px;color:var(--text-primary);">所有文章</h1>
+      <p style="color:var(--text-muted);font-size:14px;">共 <span style="font-weight:600;color:var(--text-primary);">3</span> 篇文章</p>
+    </header>
+
+    <!-- 标签云区域 -->
+    <div class="sidebar-card" style="margin-bottom:24px;">
+      <h3 class="sidebar-title" style="margin-bottom:14px;">标签筛选</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;" id="tag-cloud">
+        <a class="tag-cloud-item" onclick="filterByTag('next.js', this)" style="font-size:15px;">#Next.js</a>
+        <a class="tag-cloud-item" onclick="filterByTag('typescript', this)" style="font-size:14px;">#TypeScript</a>
+        <a class="tag-cloud-item" onclick="filterByTag('react', this)" style="font-size:14px;">#React</a>
+        <a class="tag-cloud-item" onclick="filterByTag('css', this)" style="font-size:13px;">#CSS</a>
+        <a class="tag-cloud-item" onclick="filterByTag('前端开发', this)" style="font-size:12px;">#前端开发</a>
+        <a class="tag-cloud-item" onclick="filterByTag('类型系统', this)" style="font-size:12px;">#类型系统</a>
+        <a class="tag-cloud-item" onclick="filterByTag('响应式设计', this)" style="font-size:12px;">#响应式设计</a>
+        <a class="tag-cloud-item" onclick="filterByTag('全栈开发', this)" style="font-size:12px;">#全栈开发</a>
+      </div>
+    </div>
+
+    <!-- 当前筛选提示（动态显示） -->
+    <div class="filter-bar" id="filter-bar" style="display:none;">
+      <span class="filter-label">当前筛选：<span class="filter-tag" id="filter-tag-name">#Next.js</span></span>
+      <button class="filter-clear" onclick="clearFilter()">清除筛选</button>
+    </div>
+
+    <!-- 文章列表 -->
+    <div id="blog-post-list">
+      <div class="post-card blog-post" data-tags="next.js,react,typescript">
+        <h2 style="margin-bottom:0;">
+          <a class="post-card-title" onclick="showPage('article',null)">Next.js 14 App Router 完全指南：从零到生产</a>
+        </h2>
+        <p class="post-card-excerpt">深入探讨 Next.js 14 的 App Router 架构，涵盖服务端组件、流式渲染、数据获取模式等核心概念…</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <span class="tag-badge">#Next.js</span>
+            <span class="tag-badge">#React</span>
+            <span class="tag-badge">#TypeScript</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">2024年3月15日 · 6 分钟阅读</span>
+        </div>
+      </div>
+
+      <div class="post-card blog-post" data-tags="typescript,类型系统" style="margin-top:16px;">
+        <h2 style="margin-bottom:0;">
+          <a class="post-card-title" onclick="showPage('article',null)">TypeScript 泛型深度解析：从入门到优雅</a>
+        </h2>
+        <p class="post-card-excerpt">系统梳理 TypeScript 泛型的核心用法：约束、条件类型、infer 关键字、工具类型实现原理…</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;gap:6px;">
+            <span class="tag-badge">#TypeScript</span>
+            <span class="tag-badge">#类型系统</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">2024年2月20日 · 5 分钟阅读</span>
+        </div>
+      </div>
+
+      <div class="post-card blog-post" data-tags="css,响应式设计" style="margin-top:16px;">
+        <h2 style="margin-bottom:0;">
+          <a class="post-card-title" onclick="showPage('article',null)">CSS 容器查询：告别媒体查询的响应式新时代</a>
+        </h2>
+        <p class="post-card-excerpt">容器查询（Container Queries）终于在所有主流浏览器落地稳定支持。本文带你从原理到实战…</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+          <div style="display:flex;gap:6px;">
+            <span class="tag-badge">#CSS</span>
+            <span class="tag-badge">#响应式设计</span>
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);">2024年1月10日 · 4 分钟阅读</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 无结果提示 -->
+    <div id="no-results" style="display:none;text-align:center;padding:48px 0;">
+      <p style="font-size:1.1rem;color:var(--text-muted);">该标签下暂无文章</p>
+      <p style="font-size:0.875rem;color:var(--text-muted);margin-top:8px;">试试其他标签？</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 文章详情页（右侧为本文章目录）===== -->
+<div id="page-article" class="page">
+  <div style="max-width:1280px;margin:0 auto;padding:48px 20px;">
+    <div style="display:flex;gap:40px;align-items:flex-start;">
+
+      <!-- 主内容区 -->
+      <div style="flex:1;min-width:0;">
+        <!-- 面包屑 -->
+        <nav style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);margin-bottom:28px;">
+          <a onclick="showPage('home',null)" style="cursor:pointer;color:#3b82f6;text-decoration:none;">首页</a>
+          <span>/</span>
+          <a onclick="showPage('blog',null)" style="cursor:pointer;color:#3b82f6;text-decoration:none;">文章</a>
+          <span>/</span>
+          <span style="color:var(--text-secondary);">Next.js 14 App Router 完全指南</span>
+        </nav>
+
+        <!-- 文章头部 -->
+        <header style="margin-bottom:32px;">
+          <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <span class="tag-badge" onclick="showPage('blog',null)">#Next.js</span>
+            <span class="tag-badge" onclick="showPage('blog',null)">#React</span>
+            <span class="tag-badge" onclick="showPage('blog',null)">#TypeScript</span>
+          </div>
+          <h1 style="font-size:2rem;font-weight:800;line-height:1.3;margin-bottom:16px;color:var(--text-primary);">Next.js 14 App Router 完全指南：从零到生产</h1>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-muted);">
+            <span>2024年3月15日</span>
+            <span>·</span>
+            <span>博客作者</span>
+            <span>·</span>
+            <span>约 6 分钟阅读</span>
+            <span>·</span>
+            <span>4 个章节</span>
+          </div>
+          <div class="summary-block">
+            深入探讨 Next.js 14 的 App Router 架构，涵盖服务端组件、流式渲染、数据获取模式等核心概念，帮助你构建现代化全栈应用。
+          </div>
+        </header>
+
+        <!-- 文章正文 -->
+        <article class="prose-article" id="article-content">
+          <h2 id="what-is-app-router">什么是 App Router？</h2>
+          <p>Next.js 13 引入、14 正式稳定的 <strong>App Router</strong> 是对原 Pages Router 的彻底革新。它基于 React Server Components（RSC）构建，带来了更好的性能和开发体验。</p>
+          <p>App Router 最核心的理念是：<strong>服务器优先</strong>。减少发往客户端的 JavaScript 体积，让用户获得更快的首屏加载速度。</p>
+
+          <h2 id="core-comparison">核心概念对比</h2>
+          <table>
+            <thead>
+              <tr><th>特性</th><th>Pages Router</th><th>App Router</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>默认组件类型</td><td>客户端组件</td><td>服务端组件</td></tr>
+              <tr><td>数据获取</td><td>getServerSideProps</td><td>直接 async/await</td></tr>
+              <tr><td>布局嵌套</td><td>_app.tsx 单层</td><td>多层嵌套 layout.tsx</td></tr>
+              <tr><td>流式渲染</td><td>不支持</td><td>原生支持 ✅</td></tr>
+            </tbody>
+          </table>
+
+          <h2 id="server-vs-client">服务端组件 vs 客户端组件</h2>
+          <p>App Router 最大的变化是<strong>默认所有组件都是服务端组件</strong>。服务端组件可以直接访问数据库、文件系统和私密 API，零客户端 JavaScript 开销。</p>
+          <h3 id="server-component">服务端组件示例</h3>
+          <pre><code><span class="code-comment">// 服务端组件：直接 await，无样板代码</span>
+<span class="code-keyword">export default async function</span> <span class="code-fn">PostsPage</span>() {
+  <span class="code-keyword">const</span> posts = <span class="code-keyword">await</span> db.post.<span class="code-fn">findMany</span>({
+    orderBy: { date: <span class="code-string">'desc'</span> }
+  })
+  <span class="code-keyword">return</span> (
+    &lt;<span class="code-tag">ul</span>&gt;
+      {posts.<span class="code-fn">map</span>(post =&gt; (
+        &lt;<span class="code-tag">li</span> key={post.id}&gt;{post.title}&lt;/<span class="code-tag">li</span>&gt;
+      ))}
+    &lt;/<span class="code-tag">ul</span>&gt;
+  )
+}</code></pre>
+          <p>需要交互的组件才加上 <span class="inline-code">'use client'</span> 指令，如表单、按钮点击处理、浏览器 API 调用等场景。</p>
+
+          <h2 id="data-fetching">数据获取模式</h2>
+          <p>App Router 彻底简化了数据获取。在服务端组件中，你可以直接使用 <span class="inline-code">async/await</span> 加载数据，不再需要 <span class="inline-code">getServerSideProps</span> 或 <span class="inline-code">getStaticProps</span>。</p>
+          <h3 id="parallel-fetch">并行请求</h3>
+          <p>使用 <span class="inline-code">Promise.all</span> 并行发起多个请求，避免瀑布式串行等待，显著提升性能：</p>
+          <pre><code><span class="code-keyword">export default async function</span> <span class="code-fn">DashboardPage</span>() {
+  <span class="code-comment">// 并行请求，而非串行等待</span>
+  <span class="code-keyword">const</span> [user, posts, analytics] = <span class="code-keyword">await</span> Promise.<span class="code-fn">all</span>([
+    <span class="code-fn">fetchUser</span>(),
+    <span class="code-fn">fetchPosts</span>(),
+    <span class="code-fn">fetchAnalytics</span>(),
+  ])
+  <span class="code-keyword">return</span> &lt;<span class="code-tag">Dashboard</span> user={user} posts={posts} analytics={analytics} /&gt;
+}</code></pre>
+        </article>
+
+        <!-- 底部标签 -->
+        <div style="margin-top:32px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:13px;font-weight:500;color:var(--text-secondary);">标签：</span>
+          <span class="tag-badge" onclick="showPage('blog',null)">#Next.js</span>
+          <span class="tag-badge" onclick="showPage('blog',null)">#React</span>
+          <span class="tag-badge" onclick="showPage('blog',null)">#TypeScript</span>
+        </div>
+
+        <!-- 上下篇导航 -->
+        <div style="margin-top:40px;border-top:1px solid var(--post-nav-border);padding-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div class="post-nav-card">
+            <div class="post-nav-label">← 上一篇</div>
+            <div class="post-nav-title">CSS 容器查询：告别媒体查询的响应式新时代</div>
+          </div>
+          <div class="post-nav-card" style="text-align:right;">
+            <div class="post-nav-label">下一篇 →</div>
+            <div class="post-nav-title">TypeScript 泛型深度解析：从入门到优雅</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 右侧文章目录侧边栏 ===== -->
+      <aside style="width:240px;flex-shrink:0;display:block;">
+        <div class="article-sidebar">
+          <div class="article-sidebar-title">目录</div>
+          <ul class="article-sidebar-list" id="toc-sidebar">
+            <li>
+              <a class="article-sidebar-item active" onclick="tocScroll('what-is-app-router')" style="padding-left:12px;">
+                什么是 App Router？
+              </a>
+            </li>
+            <li>
+              <a class="article-sidebar-item" onclick="tocScroll('core-comparison')" style="padding-left:12px;">
+                核心概念对比
+              </a>
+            </li>
+            <li>
+              <a class="article-sidebar-item" onclick="tocScroll('server-vs-client')" style="padding-left:12px;">
+                服务端组件 vs 客户端组件
+              </a>
+            </li>
+            <li>
+              <a class="article-sidebar-item" onclick="tocScroll('server-component')" style="padding-left:24px;font-size:12px;">
+                服务端组件示例
+              </a>
+            </li>
+            <li>
+              <a class="article-sidebar-item" onclick="tocScroll('data-fetching')" style="padding-left:12px;">
+                数据获取模式
+              </a>
+            </li>
+            <li>
+              <a class="article-sidebar-item" onclick="tocScroll('parallel-fetch')" style="padding-left:24px;font-size:12px;">
+                并行请求
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== 关于页 ===== -->
+<div id="page-about" class="page">
+  <div style="max-width:700px;margin:0 auto;padding:48px 20px;">
+    <header style="display:flex;align-items:center;gap:24px;margin-bottom:40px;flex-wrap:wrap;">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:32px;color:white;font-weight:700;flex-shrink:0;">博</div>
+      <div>
+        <h1 style="font-size:1.75rem;font-weight:800;margin-bottom:6px;color:var(--text-primary);">博客作者</h1>
+        <p style="color:var(--text-secondary);font-size:15px;">全栈工程师 · 技术爱好者 · 终身学习者</p>
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <span style="padding:4px 12px;border-radius:8px;background:var(--tag-item-bg);font-size:12px;font-weight:500;color:var(--text-secondary);">GitHub</span>
+          <span style="padding:4px 12px;border-radius:8px;background:rgba(14,165,233,0.12);font-size:12px;font-weight:500;color:#38bdf8;">Twitter</span>
+          <span style="padding:4px 12px;border-radius:8px;background:rgba(249,115,22,0.12);font-size:12px;font-weight:500;color:#fb923c;">邮件联系</span>
+        </div>
+      </div>
+    </header>
+    <div class="prose-article">
+      <h2>关于这个博客</h2>
+      <p>欢迎来到我的个人博客。这里是我记录技术思考、分享实践经验的地方。内容涵盖前端开发、系统设计、工程实践等方向。</p>
+      <h2>技术栈</h2>
+      <ul>
+        <li><strong>Next.js 14</strong> — React 全栈框架，采用 App Router</li>
+        <li><strong>TypeScript</strong> — 强类型 JavaScript</li>
+        <li><strong>Tailwind CSS</strong> — 原子化 CSS 框架</li>
+        <li><strong>MDX</strong> — 在 Markdown 中使用 React 组件</li>
+        <li><strong>rehype-pretty-code</strong> — 语法高亮（Shiki 驱动）</li>
+      </ul>
+      <h2>写作理念</h2>
+      <p>我相信好的技术文章应该：清晰表达核心思想、提供可落地的实践建议、承认不确定性而非过度自信。写作对我来说既是输出，也是深化理解的过程。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 页脚 ===== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-text">© 2024 博客作者。保留所有权利。</p>
+    <div style="display:flex;gap:16px;">
+      <span class="footer-link">GitHub</span>
+      <span class="footer-link">站点地图</span>
+      <span class="footer-link" onclick="showPage('about',null)">关于</span>
+    </div>
+  </div>
+  <p class="footer-sub">由 Next.js 14 和 Tailwind CSS 强力驱动</p>
+</footer>
+
+<script>
+  // ===== 页面切换 =====
+  function showPage(name, btnEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (btnEl) {
+      btnEl.classList.add('active');
+    } else {
+      const labels = { home: '首页', blog: '全部文章', article: '文章详情', about: '关于' };
+      document.querySelectorAll('.nav-link').forEach(t => {
+        if (t.textContent === labels[name]) t.classList.add('active');
+      });
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== 主题切换 =====
+  let isDark = true;
+  function toggleTheme() {
+    isDark = !isDark;
+    const html = document.documentElement;
+    const btn = document.querySelector('.theme-btn');
+    if (isDark) {
+      html.classList.add('dark');
+      btn.textContent = '🌙';
+    } else {
+      html.classList.remove('dark');
+      btn.textContent = '☀️';
+    }
+  }
+
+  // ===== 目录点击（平滑滚动 + 高亮跟踪）=====
+  function tocScroll(id) {
+    const target = document.getElementById(id);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // 更新侧边栏高亮
+      document.querySelectorAll('#toc-sidebar .article-sidebar-item').forEach(item => item.classList.remove('active'));
+      const clicked = document.querySelector(`#toc-sidebar .article-sidebar-item[onclick*="${id}"]`);
+      if (clicked) clicked.classList.add('active');
+    }
+  }
+
+  // ===== 标签筛选 =====
+  let activeTag = null;
+
+  function filterByTag(tag, el) {
+    // 切换：再次点击取消筛选
+    if (activeTag === tag) {
+      clearFilter();
+      return;
+    }
+
+    activeTag = tag;
+
+    // 高亮标签云
+    document.querySelectorAll('.tag-cloud-item').forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
+
+    // 显示筛选提示
+    const filterBar = document.getElementById('filter-bar');
+    const filterTagName = document.getElementById('filter-tag-name');
+    filterTagName.textContent = '#' + el.textContent.replace('#', '');
+    filterBar.style.display = 'flex';
+
+    // 筛选文章
+    filterPosts(tag);
+  }
+
+  function clearFilter() {
+    activeTag = null;
+    document.querySelectorAll('.tag-cloud-item').forEach(item => item.classList.remove('active'));
+    document.getElementById('filter-bar').style.display = 'none';
+
+    // 显示全部文章
+    document.querySelectorAll('.blog-post').forEach(post => {
+      post.style.display = 'block';
+    });
+    document.getElementById('no-results').style.display = 'none';
+  }
+
+  function filterPosts(tag) {
+    let visibleCount = 0;
+    document.querySelectorAll('.blog-post').forEach(post => {
+      const postTags = post.getAttribute('data-tags') || '';
+      if (postTags.split(',').includes(tag)) {
+        post.style.display = 'block';
+        visibleCount++;
+      } else {
+        post.style.display = 'none';
+      }
+    });
+    document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+</script>
+
+</body>
+</html>
