@@ -35,16 +35,6 @@ export default function AboutPage() {
                 GitHub
               </a>
             )}
-            {author.twitter && (
-              <a
-                href={author.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-700 hover:bg-sky-100 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:bg-sky-900/40"
-              >
-                Twitter
-              </a>
-            )}
             {author.email && (
               <a
                 href={`mailto:${author.email}`}
