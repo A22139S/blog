@@ -89,7 +89,6 @@ export function HeroSection() {
     // 显示并播放视频2
     const v2 = video2Ref.current
     if (v2) {
-      v2.style.display = ''
       if (v2.readyState >= 3) {
         safePlay(v2)
         setVideo2Playing(true)
@@ -139,7 +138,7 @@ export function HeroSection() {
         {/* 视频2：循环视频，初始隐藏，视频1结束后显示并循环 */}
         <video
           ref={video2Ref}
-          className={`hero-video hero-video-hidden`}
+          className={`hero-video ${!video2Playing ? 'hero-video-hidden' : ''}`}
           muted
           loop
           playsInline
