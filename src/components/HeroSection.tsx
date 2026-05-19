@@ -6,6 +6,9 @@ import { siteConfig } from '@/lib/config'
 import { AvatarWithFallback } from './AvatarWithFallback'
 import { ThemeToggle } from './ThemeToggle'
 
+// 静态资源路径前缀：生产环境需要 /blog basePath，开发环境为空
+const basePath = process.env.NODE_ENV === 'production' ? '/blog' : ''
+
 /**
  * P3RE 风格 Hero 区域
  * 动画序列：蓝色波浪下滑 → 中心文字淡出 → 视频播放 → 右侧作者信息淡入
@@ -67,11 +70,11 @@ export function HeroSection() {
         id="wave-overlay"
       >
         <div className="hero-waves">
-          <img src="/waves/wave-1.svg" alt="" className="hero-wave-1" />
-          <img src="/waves/wave-2.svg" alt="" className="hero-wave-2" />
-          <img src="/waves/wave-3.svg" alt="" className="hero-wave-3" />
-          <img src="/waves/wave-4.svg" alt="" className="hero-wave-4" />
-          <img src="/waves/wave-5.svg" alt="" className="hero-wave-5" />
+          <img src={`${basePath}/waves/wave-1.svg`} alt="" className="hero-wave-1" />
+          <img src={`${basePath}/waves/wave-2.svg`} alt="" className="hero-wave-2" />
+          <img src={`${basePath}/waves/wave-3.svg`} alt="" className="hero-wave-3" />
+          <img src={`${basePath}/waves/wave-4.svg`} alt="" className="hero-wave-4" />
+          <img src={`${basePath}/waves/wave-5.svg`} alt="" className="hero-wave-5" />
         </div>
       </div>
 
@@ -85,7 +88,7 @@ export function HeroSection() {
           playsInline
           preload="auto"
         >
-          <source src="/videos/fv_movie2.mp4" type="video/mp4" />
+          <source src={`${basePath}/videos/fv_movie2.mp4`} type="video/mp4" />
         </video>
         <video
           ref={video1Ref}
@@ -95,7 +98,7 @@ export function HeroSection() {
           onEnded={handleVideo1Ended}
           preload="auto"
         >
-          <source src="/videos/fv_movie1.mp4" type="video/mp4" />
+          <source src={`${basePath}/videos/fv_movie1.mp4`} type="video/mp4" />
         </video>
 
         {/* 深色遮罩 - 增加文字可读性 */}
