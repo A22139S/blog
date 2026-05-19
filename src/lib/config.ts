@@ -12,7 +12,7 @@ export const siteConfig = {
   author: {
     name: '博客作者',
     bio: '全栈工程师 · 技术爱好者 · 终身学习者',
-    avatar: '/images/avatar.jpg',
+    avatar: '/images/avatar.png',
     email: 'hello@your-domain.com',
     github: 'https://github.com/your-username',
     twitter: 'https://twitter.com/your-username',

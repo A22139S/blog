@@ -192,7 +192,7 @@ export function HeroSection() {
             <div className="mb-5 flex justify-center">
               <div className="h-28 w-28 overflow-hidden rounded-full ring-4 ring-white/20">
                 <AvatarWithFallback
-                  src={siteConfig.author.avatar}
+                  src={`${basePath}${siteConfig.author.avatar}`}
                   fallback={authorInitial}
                   alt={siteConfig.author.name}
                 />
