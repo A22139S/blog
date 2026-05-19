@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { siteConfig } from '@/lib/config'
 import { AvatarWithFallback } from './AvatarWithFallback'
@@ -11,27 +11,58 @@ const basePath = process.env.NODE_ENV === 'production' ? '/blog' : ''
 
 /**
  * P3RE 风格 Hero 区域
- * 动画序列：蓝色波浪下滑 → 中心文字淡出 → 视频播放 → 右侧作者信息淡入
+ * 动画序列：蓝色波浪下滑 → 中心文字淡出 → 视频1自动播放 → 视频1结束 → 视频2循环
  */
 export function HeroSection() {
   const [waveDone, setWaveDone] = useState(false)
   const [centerTextGone, setCenterTextGone] = useState(false)
   const [authorVisible, setAuthorVisible] = useState(false)
+  const [video1Playing, setVideo1Playing] = useState(false)
+  const [video2Playing, setVideo2Playing] = useState(false)
   const video1Ref = useRef<HTMLVideoElement>(null)
   const video2Ref = useRef<HTMLVideoElement>(null)
 
   const authorInitial = siteConfig.author.name.charAt(0)
 
+  // 安全播放视频（捕获 Promise rejection）
+  const safePlay = useCallback(async (video: HTMLVideoElement | null) => {
+    if (!video) return
+    try {
+      await video.play()
+    } catch (err) {
+      // 浏览器可能阻止自动播放，尝试静音后再播放
+      console.warn('Video play failed, retrying with muted:', err)
+      video.muted = true
+      try {
+        await video.play()
+      } catch (retryErr) {
+        console.warn('Video play still failed after mute retry:', retryErr)
+      }
+    }
+  }, [])
+
   // 波浪动画结束后触发视频播放
   useEffect(() => {
     const timer = setTimeout(() => {
       setWaveDone(true)
-      // 播放视频1
-      video1Ref.current?.play()
+      // 波浪结束后播放视频1
+      const v1 = video1Ref.current
+      if (v1) {
+        // 确保视频已加载足够数据再播放
+        if (v1.readyState >= 3) {
+          safePlay(v1)
+          setVideo1Playing(true)
+        } else {
+          v1.addEventListener('canplay', () => {
+            safePlay(v1)
+            setVideo1Playing(true)
+          }, { once: true })
+        }
+      }
     }, 4000) // 波浪下滑动画 3s + 1s delay
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [safePlay])
 
   // 中心文字淡出
   useEffect(() => {
@@ -50,12 +81,26 @@ export function HeroSection() {
   }, [])
 
   // 视频1播放完毕后切换到视频2
-  const handleVideo1Ended = () => {
+  const handleVideo1Ended = useCallback(() => {
+    setVideo1Playing(false)
     if (video1Ref.current) {
       video1Ref.current.style.display = 'none'
     }
-    video2Ref.current?.play()
-  }
+    // 显示并播放视频2
+    const v2 = video2Ref.current
+    if (v2) {
+      v2.style.display = ''
+      if (v2.readyState >= 3) {
+        safePlay(v2)
+        setVideo2Playing(true)
+      } else {
+        v2.addEventListener('canplay', () => {
+          safePlay(v2)
+          setVideo2Playing(true)
+        }, { once: true })
+      }
+    }
+  }, [safePlay])
 
   return (
     <section className="hero-section relative h-screen w-full overflow-hidden">
@@ -80,25 +125,27 @@ export function HeroSection() {
 
       {/* ===== 视频背景 ===== */}
       <div className="hero-video-bg">
+        {/* 视频1：开场视频，波浪结束后自动播放，播放完毕后隐藏 */}
+        <video
+          ref={video1Ref}
+          className={`hero-video ${!video1Playing ? 'hero-video-hidden' : ''}`}
+          muted
+          playsInline
+          preload="auto"
+          onEnded={handleVideo1Ended}
+        >
+          <source src={`${basePath}/videos/fv_movie1.mp4`} type="video/mp4" />
+        </video>
+        {/* 视频2：循环视频，初始隐藏，视频1结束后显示并循环 */}
         <video
           ref={video2Ref}
-          className="hero-video"
+          className={`hero-video hero-video-hidden`}
           muted
           loop
           playsInline
           preload="auto"
         >
           <source src={`${basePath}/videos/fv_movie2.mp4`} type="video/mp4" />
-        </video>
-        <video
-          ref={video1Ref}
-          className="hero-video"
-          muted
-          playsInline
-          onEnded={handleVideo1Ended}
-          preload="auto"
-        >
-          <source src={`${basePath}/videos/fv_movie1.mp4`} type="video/mp4" />
         </video>
 
         {/* 深色遮罩 - 增加文字可读性 */}

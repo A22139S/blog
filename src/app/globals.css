@@ -216,6 +216,7 @@ code[data-theme='github-dark'] {
   inset: 0;
   width: 100%;
   height: 100%;
+  background-color: #0a0a0a; /* 视频加载前的背景色 */
 }
 
 .hero-video {
@@ -223,6 +224,15 @@ code[data-theme='github-dark'] {
   height: 100%;
   object-fit: cover;
   position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* 视频隐藏状态 */
+.hero-video-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* 视频遮罩 - 增加文字可读性 */
