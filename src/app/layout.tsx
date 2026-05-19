@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { siteConfig } from '@/lib/config'
-import { Header } from '@/components/Header'
+import { ConditionalHeader } from '@/components/ConditionalHeader'
 import { Footer } from '@/components/Footer'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
@@ -102,7 +102,7 @@ export default function RootLayout({
         {/* 深色模式提供者（语义容器） */}
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">
-            <Header />
+            <ConditionalHeader />
             {/* 主内容区域 */}
             <main className="flex-1 animate-fade-in">{children}</main>
             <Footer />

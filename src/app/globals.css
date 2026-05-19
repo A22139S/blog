@@ -124,3 +124,234 @@ code[data-theme='github-dark'] {
   content: '';
   @apply absolute -left-3 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-primary-500;
 }
+
+/* ===== P3RE 风格 Hero 区域 ===== */
+
+/* 波浪遮罩 - 蓝色全屏覆盖，动画下滑消失 */
+.hero-wave-overlay {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  height: 120vh;
+  width: 100%;
+  background-color: #469ce5;
+  transform: translateY(-10vh);
+  animation: waveDown 3s ease-out 1s forwards;
+  z-index: 999;
+}
+
+.dark .hero-wave-overlay {
+  background-color: #1e3a8a;
+}
+
+@keyframes waveDown {
+  0% {
+    transform: translateY(-10vh);
+  }
+  100% {
+    transform: translateY(110vh);
+  }
+}
+
+/* 波浪层容器 */
+.hero-waves {
+  display: block;
+  position: absolute;
+  bottom: 120vh;
+  width: 100%;
+}
+
+.hero-waves img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+/* 最底层波浪（不动画，作为基底） */
+.hero-wave-5 {
+  bottom: -1vw;
+}
+
+/* 4 层动态波浪，不同透明度和动画速度 */
+.hero-wave-1 {
+  opacity: 0.8;
+  bottom: -0.1vw;
+  animation: waveMove1 5s infinite;
+}
+
+.hero-wave-2 {
+  opacity: 0.7;
+  bottom: 0.5vw;
+  animation: waveMove2 4s infinite;
+}
+
+.hero-wave-3 {
+  opacity: 0.6;
+  bottom: 0.3vw;
+  animation: waveMove3 3.5s infinite;
+}
+
+.hero-wave-4 {
+  opacity: 0.5;
+  bottom: 0.1vw;
+  animation: waveMove4 3s infinite;
+}
+
+@keyframes waveMove1 {
+  50% { transform: translateY(35px); }
+}
+@keyframes waveMove2 {
+  50% { transform: translateY(25px); }
+}
+@keyframes waveMove3 {
+  50% { transform: translateY(20px); }
+}
+@keyframes waveMove4 {
+  50% { transform: translateY(20px); }
+}
+
+/* 视频背景 */
+.hero-video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+}
+
+/* 视频遮罩 - 增加文字可读性 */
+.hero-video-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+/* 中心文字 */
+.hero-center-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  transition: opacity 1.5s ease-out;
+}
+
+.hero-center-text-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 右侧作者信息卡片 */
+.hero-author-card {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 1.5s ease-out;
+  width: 300px;
+}
+
+.hero-author-visible {
+  opacity: 1;
+}
+
+/* 毛玻璃卡片 */
+.hero-author-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.dark .hero-author-glass {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 浮动导航 */
+.hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-nav-logo {
+  text-decoration: none;
+}
+
+/* 作者内容 */
+.hero-author-content {
+  padding-top: 0.5rem;
+}
+
+/* 滚动指示器 */
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+
+.hero-scroll-visible {
+  opacity: 1;
+}
+
+.hero-scroll-arrow {
+  color: rgba(255, 255, 255, 0.5);
+  animation: scrollBounce 2s infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(8px); }
+  60% { transform: translateY(4px); }
+}
+
+/* ===== Hero 区域移动端适配 ===== */
+@media (max-width: 768px) {
+  .hero-author-card {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 15%;
+    transform: translateX(-50%);
+    width: calc(100% - 2rem);
+    max-width: 340px;
+  }
+
+  .hero-center-text h1 {
+    font-size: 2rem;
+  }
+
+  .hero-center-text p {
+    font-size: 0.875rem;
+  }
+}
