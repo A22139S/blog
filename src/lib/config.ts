@@ -28,6 +28,11 @@ export const siteConfig = {
   locale: 'zh-CN',
   /** 时区 */
   timezone: 'Asia/Shanghai',
+  /** 访客统计（Microsoft Clarity） */
+  analytics: {
+    /** Clarity 项目 ID，从 https://clarity.microsoft.com 后台获取，留空则不加载统计脚本 */
+    clarityId: 'wtgeeu6a0k',
+  },
 } as const
 
 export type SiteConfig = typeof siteConfig
