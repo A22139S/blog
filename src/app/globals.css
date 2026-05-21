@@ -9,22 +9,21 @@
 
 /* ===== 代码块样式（配合 rehype-pretty-code） ===== */
 [data-rehype-pretty-code-figure] {
-  @apply my-6 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700;
+  @apply my-6 overflow-hidden rounded-lg;
+  border: 1px solid #21262d;
 }
 
 [data-rehype-pretty-code-title] {
-  @apply flex items-center gap-2 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400;
+  @apply flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300;
+  background: #161b22;
 }
 
 [data-rehype-pretty-code-figure] pre {
   @apply overflow-x-auto p-4 text-sm leading-relaxed;
-  background: transparent !important;
 }
 
 [data-rehype-pretty-code-figure] code {
   @apply font-mono;
-  background: transparent !important;
-  color: inherit !important;
   padding: 0 !important;
 }
 
@@ -34,18 +33,19 @@
 }
 
 [data-highlighted-line] {
-  @apply bg-primary-50 dark:bg-primary-900/20;
+  @apply bg-white/10 dark:bg-white/5;
+  border-left: 3px solid #58a6ff;
 }
 
-/* 代码块背景 */
+/* 代码块背景 —— 不论浅色/深色模式，统一黑底 */
 pre[data-theme='github-light'],
 code[data-theme='github-light'] {
-  @apply bg-gray-50;
+  background: #161b22;
 }
 
 pre[data-theme='github-dark'],
 code[data-theme='github-dark'] {
-  @apply bg-gray-900;
+  background: #0d1117;
 }
 
 /* ===== 滚动条样式 ===== */
