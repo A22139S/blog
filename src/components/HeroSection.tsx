@@ -15,6 +15,7 @@ const basePath = process.env.NODE_ENV === 'production' ? '/blog' : ''
  */
 export function HeroSection() {
   const [waveDone, setWaveDone] = useState(false)
+  const [waveUnmounted, setWaveUnmounted] = useState(false)
   const [centerTextGone, setCenterTextGone] = useState(false)
   const [authorVisible, setAuthorVisible] = useState(false)
   const [video1Playing, setVideo1Playing] = useState(false)
@@ -53,6 +54,8 @@ export function HeroSection() {
           safePlay(v1)
           setVideo1Playing(true)
         } else {
+          // preload="none" — 显式触发加载
+          v1.load()
           v1.addEventListener('canplay', () => {
             safePlay(v1)
             setVideo1Playing(true)
@@ -61,7 +64,9 @@ export function HeroSection() {
       }
     }, 4000) // 波浪下滑动画 3s + 1s delay
 
-    return () => clearTimeout(timer)
+    const unmountTimer = setTimeout(() => setWaveUnmounted(true), 4500)
+
+    return () => { clearTimeout(timer); clearTimeout(unmountTimer) }
   }, [safePlay])
 
   // 中心文字淡出
@@ -93,6 +98,8 @@ export function HeroSection() {
         safePlay(v2)
         setVideo2Playing(true)
       } else {
+        // preload="none" — 显式触发加载
+        v2.load()
         v2.addEventListener('canplay', () => {
           safePlay(v2)
           setVideo2Playing(true)
@@ -103,46 +110,42 @@ export function HeroSection() {
 
   return (
     <section className="hero-section relative h-screen w-full overflow-hidden">
-      {/* ===== 蓝色波浪遮罩 ===== */}
-      <div
-        className="hero-wave-overlay"
-        onAnimationEnd={() => {
-          // 波浪下滑动画结束后隐藏遮罩
-          const el = document.getElementById('wave-overlay')
-          if (el) el.style.display = 'none'
-        }}
-        id="wave-overlay"
-      >
+      {/* ===== 蓝色波浪遮罩（动画结束后卸载 DOM） ===== */}
+      {!waveUnmounted && (
+      <div className="hero-wave-overlay">
         <div className="hero-waves">
-          <img src={`${basePath}/waves/wave-1.svg`} alt="" className="hero-wave-1" />
-          <img src={`${basePath}/waves/wave-2.svg`} alt="" className="hero-wave-2" />
-          <img src={`${basePath}/waves/wave-3.svg`} alt="" className="hero-wave-3" />
-          <img src={`${basePath}/waves/wave-4.svg`} alt="" className="hero-wave-4" />
-          <img src={`${basePath}/waves/wave-5.svg`} alt="" className="hero-wave-5" />
+          <img src={`${basePath}/waves/wave-1.svg`} alt="" className="hero-wave-1" loading="lazy" decoding="async" />
+          <img src={`${basePath}/waves/wave-2.svg`} alt="" className="hero-wave-2" loading="lazy" decoding="async" />
+          <img src={`${basePath}/waves/wave-3.svg`} alt="" className="hero-wave-3" loading="lazy" decoding="async" />
+          <img src={`${basePath}/waves/wave-4.svg`} alt="" className="hero-wave-4" loading="lazy" decoding="async" />
+          <img src={`${basePath}/waves/wave-5.svg`} alt="" className="hero-wave-5" loading="lazy" decoding="async" />
         </div>
       </div>
+      )}
 
       {/* ===== 视频背景 ===== */}
       <div className="hero-video-bg">
-        {/* 视频1：开场视频，波浪结束后自动播放，播放完毕后隐藏 */}
+        {/* 视频1：开场视频，波浪结束后按需加载播放，播放完毕后隐藏 */}
         <video
           ref={video1Ref}
           className={`hero-video ${!video1Playing ? 'hero-video-hidden' : ''}`}
           muted
           playsInline
-          preload="auto"
+          preload="none"
+          poster={`${basePath}/images/hero-poster.webp`}
           onEnded={handleVideo1Ended}
         >
           <source src={`${basePath}/videos/fv_movie1.mp4`} type="video/mp4" />
         </video>
-        {/* 视频2：循环视频，初始隐藏，视频1结束后显示并循环 */}
+        {/* 视频2：循环视频，初始隐藏，视频1结束后按需加载显示并循环 */}
         <video
           ref={video2Ref}
           className={`hero-video ${!video2Playing ? 'hero-video-hidden' : ''}`}
           muted
           loop
           playsInline
-          preload="auto"
+          preload="none"
+          poster={`${basePath}/images/hero-poster.webp`}
         >
           <source src={`${basePath}/videos/fv_movie2.mp4`} type="video/mp4" />
         </video>

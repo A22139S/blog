@@ -12,7 +12,7 @@ export const siteConfig = {
   author: {
     name: '英年早睡',
     bio: '编程初学者 · 技术爱好者 · 终身学习者',
-    avatar: '/images/avatar.png',
+    avatar: '/images/avatar.webp',
     email: '823196588@qq.com',
     github: 'https://github.com/A22139S',
   },

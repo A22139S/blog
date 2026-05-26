@@ -30,6 +30,10 @@ export function AvatarWithFallback({ src, fallback, alt }: AvatarWithFallbackPro
     <img
       src={src}
       alt={alt}
+      width={112}
+      height={112}
+      loading="lazy"
+      decoding="async"
       className="h-full w-full object-cover"
       onError={() => setImgError(true)}
     />

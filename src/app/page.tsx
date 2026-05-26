@@ -1,9 +1,26 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { getAllPosts } from '@/lib/posts'
 import { siteConfig } from '@/lib/config'
 import { PostCard } from '@/components/PostCard'
-import { HeroSection } from '@/components/HeroSection'
+
+/** Hero 区域动态加载 — 延迟非首屏 JS，减少初始包体积 */
+const HeroSection = dynamic(
+  () => import('@/components/HeroSection').then((mod) => mod.HeroSection),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="hero-section relative h-screen w-full overflow-hidden bg-gray-950">
+        <div className="flex h-full items-center justify-center">
+          <span className="animate-pulse text-5xl font-bold tracking-wider text-white/60 sm:text-7xl">
+            {siteConfig.name}
+          </span>
+        </div>
+      </div>
+    ),
+  }
+)
 
 /** 首页 metadata */
 export const metadata: Metadata = {

@@ -127,6 +127,11 @@ code[data-theme='github-dark'] {
 
 /* ===== P3RE 风格 Hero 区域 ===== */
 
+/* Hero 区域性能优化 - CSS containment 隔离渲染 */
+.hero-section {
+  contain: layout style paint;
+}
+
 /* 波浪遮罩 - 蓝色全屏覆盖，动画下滑消失 */
 .hero-wave-overlay {
   position: fixed;
@@ -274,6 +279,7 @@ code[data-theme='github-dark'] {
   opacity: 0;
   transition: opacity 1.5s ease-out;
   width: 300px;
+  will-change: opacity;
 }
 
 .hero-author-visible {
@@ -365,3 +371,5 @@ code[data-theme='github-dark'] {
     font-size: 0.875rem;
   }
 }
+
+

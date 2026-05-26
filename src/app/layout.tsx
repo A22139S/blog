@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { siteConfig } from '@/lib/config'
 import { ConditionalHeader } from '@/components/ConditionalHeader'
@@ -97,15 +98,16 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches;if(t==='dark'||(t===null&&p)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
           }}
         />
-        {/* 访客统计 - Microsoft Clarity */}
-        {siteConfig.analytics?.clarityId && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${siteConfig.analytics.clarityId}");`,
-            }}
-          />
-        )}
+        {/* DNS 预解析与预连接 */}
+        <link rel="dns-prefetch" href="https://www.clarity.ms" />
+        <link rel="preconnect" href="https://www.clarity.ms" crossOrigin="anonymous" />
       </head>
+      {/* Microsoft Clarity — 延迟加载，不阻塞首屏 */}
+      {siteConfig.analytics?.clarityId && (
+        <Script id="clarity" strategy="lazyOnload">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${siteConfig.analytics.clarityId}");`}
+        </Script>
+      )}
       <body className="min-h-screen bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
         {/* 深色模式提供者（语义容器） */}
         <ThemeProvider>

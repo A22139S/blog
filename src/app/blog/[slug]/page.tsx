@@ -11,6 +11,9 @@ import { siteConfig } from '@/lib/config'
 import { formatDate, extractToc } from '@/lib/utils'
 import { TagBadge } from '@/components/TagBadge'
 import { TableOfContents } from '@/components/TableOfContents'
+import { CodeCopyButton } from '@/components/CodeCopyButton'
+import { ReadingProgress, TocHighlighter } from '@/components/ReadingProgress'
+import { FloatingToolbar } from '@/components/FloatingToolbar'
 
 interface BlogPostPageProps {
   params: { slug: string }
@@ -114,6 +117,11 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      {/* 阅读进度条 + TOC 高亮 + 代码复制按钮 */}
+      <ReadingProgress />
+      <TocHighlighter />
+      <CodeCopyButton />
 
       {/*
        * 外层容器：最宽 1280px，左右内边距
