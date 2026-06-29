@@ -5,6 +5,49 @@
 /* ===== 基础变量 ===== */
 :root {
   --radius: 0.5rem;
+  /* 微妙的文字平衡 */
+  --wrap: 'balance';
+}
+
+/* ===== 全局排版优化 ===== */
+html {
+  /* 平滑滚动（尊重 prefers-reduced-motion 在 GSAP matchMedia 中处理） */
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-feature-settings: 'kern' 1, 'liga' 1, 'cv11' 1;
+}
+
+/* 标题字体更紧、更有存在感 */
+h1, h2, h3, h4 {
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* 长段落最大宽度约 65 字符 */
+p {
+  text-wrap: pretty;
+}
+
+/* 链接可访问焦点环 */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* prefers-reduced-motion — 禁用所有非必要动画 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ===== 代码块样式（配合 rehype-pretty-code） ===== */
@@ -132,87 +175,40 @@ code[data-theme='github-dark'] {
   contain: layout style paint;
 }
 
-/* 波浪遮罩 - 蓝色全屏覆盖，动画下滑消失 */
-.hero-wave-overlay {
-  position: fixed;
-  display: flex;
-  justify-content: center;
-  height: 120vh;
-  width: 100%;
-  background-color: #469ce5;
-  transform: translateY(-10vh);
-  animation: waveDown 3s ease-out 1s forwards;
-  z-index: 999;
-}
-
-.dark .hero-wave-overlay {
-  background-color: #1e3a8a;
-}
-
-@keyframes waveDown {
-  0% {
-    transform: translateY(-10vh);
-  }
-  100% {
-    transform: translateY(110vh);
-  }
-}
-
-/* 波浪层容器 */
+/* 波浪遮罩容器（由 GSAP 驱动） */
 .hero-waves {
-  display: block;
   position: absolute;
-  bottom: 120vh;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-.hero-waves img {
+.hero-waves img.wave-layer {
   position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  /* 轻微模糊让波浪边缘柔和、自然 */
+  filter: blur(2px);
 }
 
-/* 最底层波浪（不动画，作为基底） */
+/* SVG 翻转 180°：原始设计是水面波纹（贴底边），翻转后贴合顶边下滑边缘 */
+.wave-flip {
+  transform: rotate(180deg);
+}
+
+/* 保留旧类名（避免 HeroSection 中删除 className 的碎片改动） */
+.hero-wave-overlay,
+.hero-wave-1,
+.hero-wave-2,
+.hero-wave-3,
+.hero-wave-4,
 .hero-wave-5 {
-  bottom: -1vw;
-}
-
-/* 4 层动态波浪，不同透明度和动画速度 */
-.hero-wave-1 {
-  opacity: 0.8;
-  bottom: -0.1vw;
-  animation: waveMove1 5s infinite;
-}
-
-.hero-wave-2 {
-  opacity: 0.7;
-  bottom: 0.5vw;
-  animation: waveMove2 4s infinite;
-}
-
-.hero-wave-3 {
-  opacity: 0.6;
-  bottom: 0.3vw;
-  animation: waveMove3 3.5s infinite;
-}
-
-.hero-wave-4 {
-  opacity: 0.5;
-  bottom: 0.1vw;
-  animation: waveMove4 3s infinite;
-}
-
-@keyframes waveMove1 {
-  50% { transform: translateY(35px); }
-}
-@keyframes waveMove2 {
-  50% { transform: translateY(25px); }
-}
-@keyframes waveMove3 {
-  50% { transform: translateY(20px); }
-}
-@keyframes waveMove4 {
-  50% { transform: translateY(20px); }
+  /* 当前未使用，留作占位避免编译警告 */
 }
 
 /* 视频背景 */
