@@ -14,8 +14,13 @@ interface WaveOverlayProps {
 
 /**
  * 蓝色潮水遮罩：SVG 波浪形上边缘（潮线）+ 渐变水体 + 水面涟漪
- * GSAP 驱动整体下滑（退潮），露出后面的视频和首页
- * 上方（波浪线以上）透明，下方（波浪线以下）蓝色 —— 真正的潮水形状而非方块
+ *
+ * 流动机制：所有 path 在 x 方向上以 320（一个完整波浪周期）为单位向右平移，
+ * 平移满一个周期后形状与起点完全一致 → GSAP linear repeat 无缝循环。
+ *
+ * 退潮机制：GSAP timeline 驱动整个 overlay 容器 yPercent 0→110（向下退出）。
+ *
+ * 上方（波浪线以上）透明露出视频，下方蓝色渐变 = 真正的潮水形状而非方块。
  */
 export function WaveOverlay({
   delay = 0.6,
@@ -23,6 +28,7 @@ export function WaveOverlay({
   onComplete,
 }: WaveOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const waterPathRef = useRef<SVGPathElement>(null)
   const ripple1Ref = useRef<SVGPathElement>(null)
   const ripple2Ref = useRef<SVGPathElement>(null)
 
@@ -32,32 +38,44 @@ export function WaveOverlay({
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // 初始：完整覆盖屏幕（yPercent: 0）
+    // 初始：完整覆盖屏幕
     gsap.set(overlay, { yPercent: 0 })
 
-    // 水面涟漪：横向流动 + 上下浮动，模拟水面波纹
-    const rippleTweens: gsap.core.Tween[] = []
+    // 波浪周期 = 320（viewBox 单位）。所有 path 范围 [-640, 2560]，
+    // 平移 [0, 320] 时 [0, 1920] 可视区始终被覆盖，无缝衔接。
+    const WAVE_PERIOD = 320
+    const flowTweens: gsap.core.Tween[] = []
+
+    // 主水体潮线向右流动（8s 一个周期）
+    if (waterPathRef.current) {
+      flowTweens.push(
+        gsap.fromTo(
+          waterPathRef.current,
+          { attr: { transform: 'translate(0,0)' } },
+          {
+            attr: { transform: `translate(${WAVE_PERIOD},0)` },
+            duration: 8,
+            ease: 'none',
+            repeat: -1,
+          }
+        )
+      )
+    }
+
+    // 涟漪向右流动（速度略快，制造层次感）
     ;[ripple1Ref.current, ripple2Ref.current].forEach((el, i) => {
       if (!el) return
-      // 横向缓慢流动
-      rippleTweens.push(
-        gsap.to(el, {
-          x: -45 - i * 10,
-          duration: 5 + i,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        })
-      )
-      // 上下轻微浮动
-      rippleTweens.push(
-        gsap.to(el, {
-          y: 6 + i * 2,
-          duration: 3 + i * 0.5,
-          ease: 'sine.inOut',
-          repeat: -1,
-          yoyo: true,
-        })
+      flowTweens.push(
+        gsap.fromTo(
+          el,
+          { attr: { transform: 'translate(0,0)' } },
+          {
+            attr: { transform: `translate(${WAVE_PERIOD},0)` },
+            duration: 6 - i,
+            ease: 'none',
+            repeat: -1,
+          }
+        )
       )
     })
 
@@ -75,12 +93,12 @@ export function WaveOverlay({
     // 尊重 prefers-reduced-motion：直接跳到结束状态
     if (reduceMotion) {
       tl.progress(1)
-      rippleTweens.forEach((t) => t.kill())
+      flowTweens.forEach((t) => t.kill())
     }
 
     return () => {
       tl.kill()
-      rippleTweens.forEach((t) => t.kill())
+      flowTweens.forEach((t) => t.kill())
     }
   }, [delay, duration, onComplete])
 
@@ -114,28 +132,29 @@ export function WaveOverlay({
 
         {/*
           主水体：波浪形上边缘（潮线）+ 渐变填充至底部
-          波浪在 y=50（峰）到 y=230（谷）之间起伏，中线 y=140
-          上方（y < 波浪线）透明，露出视频；下方蓝色 = 潮水
+          周期 T=320，振幅 90（峰 y=50 / 谷 y=230，中线 y=140）
+          path 范围 x∈[-640, 2560]（10 个周期），保证平移 320 时可视区 [0,1920] 无缝
         */}
         <path
-          d="M 0,140 Q 160,50 320,140 Q 480,230 640,140 Q 800,50 960,140 Q 1120,230 1280,140 Q 1440,50 1600,140 Q 1760,230 1920,140 L 1920,1080 L 0,1080 Z"
+          ref={waterPathRef}
+          d="M -640,140 Q -480,50 -320,140 Q -160,230 0,140 Q 160,50 320,140 Q 480,230 640,140 Q 800,50 960,140 Q 1120,230 1280,140 Q 1440,50 1600,140 Q 1760,230 1920,140 Q 2080,50 2240,140 Q 2400,230 2560,140 L 2560,1080 L -640,1080 Z"
           fill="url(#oceanGrad)"
         />
 
-        {/* 水面涟漪 1：贴近潮线的浅色波浪线，GSAP 横向流动 */}
+        {/* 水面涟漪 1：贴近潮线的浅色波浪线，向右流动 */}
         <path
           ref={ripple1Ref}
-          d="M -60,150 Q 120,70 300,150 Q 480,230 660,150 Q 840,70 1020,150 Q 1200,230 1380,150 Q 1560,70 1740,150 Q 1920,230 2100,150"
+          d="M -640,150 Q -480,60 -320,150 Q -160,240 0,150 Q 160,60 320,150 Q 480,240 640,150 Q 800,60 960,150 Q 1120,240 1280,150 Q 1440,60 1600,150 Q 1760,240 1920,150 Q 2080,60 2240,150 Q 2400,240 2560,150"
           fill="none"
           stroke="rgba(255,255,255,0.30)"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
         />
 
-        {/* 水面涟漪 2：稍低、更浅的次级波纹 */}
+        {/* 水面涟漪 2：稍低、更浅的次级波纹，向右流动 */}
         <path
           ref={ripple2Ref}
-          d="M -80,180 Q 140,110 360,180 Q 580,250 800,180 Q 1020,110 1240,180 Q 1460,250 1680,180 Q 1900,110 2120,180"
+          d="M -640,175 Q -480,95 -320,175 Q -160,255 0,175 Q 160,95 320,175 Q 480,255 640,175 Q 800,95 960,175 Q 1120,255 1280,175 Q 1440,95 1600,175 Q 1760,255 1920,175 Q 2080,95 2240,175 Q 2400,255 2560,175"
           fill="none"
           stroke="rgba(255,255,255,0.16)"
           strokeWidth="1.5"
