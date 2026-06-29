@@ -2,26 +2,30 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import gsap from 'gsap'
 import { siteConfig } from '@/lib/config'
 import { AvatarWithFallback } from './AvatarWithFallback'
 import { ThemeToggle } from './ThemeToggle'
+import { WaveOverlay } from './WaveOverlay'
 
-// 静态资源路径前缀：生产环境需要 /blog basePath，开发环境为空
-const basePath = process.env.NODE_ENV === 'production' ? '/blog' : ''
+// 静态资源路径前缀：通过 NEXT_PUBLIC_BASE_PATH 环境变量配置
+// GitHub Pages 构建时设为 /blog；腾讯云动态部署时为空
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
 /**
  * P3RE 风格 Hero 区域
- * 动画序列：蓝色波浪下滑 → 中心文字淡出 → 视频1自动播放 → 视频1结束 → 视频2循环
+ * 动画序列：蓝色波浪下滑（GSAP） → 中心文字淡出（GSAP） → 视频1自动播放 → 视频1结束 → 视频2循环
  */
 export function HeroSection() {
-  const [waveDone, setWaveDone] = useState(false)
-  const [waveUnmounted, setWaveUnmounted] = useState(false)
   const [centerTextGone, setCenterTextGone] = useState(false)
   const [authorVisible, setAuthorVisible] = useState(false)
   const [video1Playing, setVideo1Playing] = useState(false)
   const [video2Playing, setVideo2Playing] = useState(false)
   const video1Ref = useRef<HTMLVideoElement>(null)
   const video2Ref = useRef<HTMLVideoElement>(null)
+  const centerTextRef = useRef<HTMLDivElement>(null)
+  const authorCardRef = useRef<HTMLDivElement>(null)
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null)
 
   const authorInitial = siteConfig.author.name.charAt(0)
 
@@ -31,7 +35,6 @@ export function HeroSection() {
     try {
       await video.play()
     } catch (err) {
-      // 浏览器可能阻止自动播放，尝试静音后再播放
       console.warn('Video play failed, retrying with muted:', err)
       video.muted = true
       try {
@@ -42,48 +45,51 @@ export function HeroSection() {
     }
   }, [])
 
-  // 波浪动画结束后触发视频播放
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWaveDone(true)
-      // 波浪结束后播放视频1
-      const v1 = video1Ref.current
-      if (v1) {
-        // 确保视频已加载足够数据再播放
-        if (v1.readyState >= 3) {
+  // 波浪动画结束后触发视频播放 + 中心文字淡出 + 作者卡片淡入
+  const handleWaveComplete = useCallback(() => {
+    const v1 = video1Ref.current
+    if (v1) {
+      if (v1.readyState >= 3) {
+        safePlay(v1)
+        setVideo1Playing(true)
+      } else {
+        v1.load()
+        v1.addEventListener('canplay', () => {
           safePlay(v1)
           setVideo1Playing(true)
-        } else {
-          // preload="none" — 显式触发加载
-          v1.load()
-          v1.addEventListener('canplay', () => {
-            safePlay(v1)
-            setVideo1Playing(true)
-          }, { once: true })
-        }
+        }, { once: true })
       }
-    }, 4000) // 波浪下滑动画 3s + 1s delay
+    }
 
-    const unmountTimer = setTimeout(() => setWaveUnmounted(true), 4500)
-
-    return () => { clearTimeout(timer); clearTimeout(unmountTimer) }
-  }, [safePlay])
-
-  // 中心文字淡出
-  useEffect(() => {
-    const timer = setTimeout(() => {
+    // GSAP 中心文字淡出
+    if (centerTextRef.current) {
+      gsap.to(centerTextRef.current, {
+        autoAlpha: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+      })
       setCenterTextGone(true)
-    }, 3000) // 3s 后开始淡出
-    return () => clearTimeout(timer)
-  }, [])
+    }
 
-  // 作者信息淡入
-  useEffect(() => {
-    const timer = setTimeout(() => {
+    // GSAP 作者卡片淡入
+    if (authorCardRef.current) {
+      gsap.fromTo(
+        authorCardRef.current,
+        { autoAlpha: 0, x: 40 },
+        { autoAlpha: 1, x: 0, duration: 1.4, ease: 'power3.out', delay: 0.2 }
+      )
       setAuthorVisible(true)
-    }, 4500) // 4.5s 后开始显示
-    return () => clearTimeout(timer)
-  }, [])
+    }
+
+    // 滚动指示器淡入
+    if (scrollIndicatorRef.current) {
+      gsap.fromTo(
+        scrollIndicatorRef.current,
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 1.5 }
+      )
+    }
+  }, [safePlay])
 
   // 视频1播放完毕后切换到视频2
   const handleVideo1Ended = useCallback(() => {
@@ -91,14 +97,12 @@ export function HeroSection() {
     if (video1Ref.current) {
       video1Ref.current.style.display = 'none'
     }
-    // 显示并播放视频2
     const v2 = video2Ref.current
     if (v2) {
       if (v2.readyState >= 3) {
         safePlay(v2)
         setVideo2Playing(true)
       } else {
-        // preload="none" — 显式触发加载
         v2.load()
         v2.addEventListener('canplay', () => {
           safePlay(v2)
@@ -110,22 +114,11 @@ export function HeroSection() {
 
   return (
     <section className="hero-section relative h-screen w-full overflow-hidden">
-      {/* ===== 蓝色波浪遮罩（动画结束后卸载 DOM） ===== */}
-      {!waveUnmounted && (
-      <div className="hero-wave-overlay">
-        <div className="hero-waves">
-          <img src={`${basePath}/waves/wave-1.svg`} alt="" className="hero-wave-1" loading="lazy" decoding="async" />
-          <img src={`${basePath}/waves/wave-2.svg`} alt="" className="hero-wave-2" loading="lazy" decoding="async" />
-          <img src={`${basePath}/waves/wave-3.svg`} alt="" className="hero-wave-3" loading="lazy" decoding="async" />
-          <img src={`${basePath}/waves/wave-4.svg`} alt="" className="hero-wave-4" loading="lazy" decoding="async" />
-          <img src={`${basePath}/waves/wave-5.svg`} alt="" className="hero-wave-5" loading="lazy" decoding="async" />
-        </div>
-      </div>
-      )}
+      {/* ===== 蓝色波浪遮罩（GSAP 驱动） ===== */}
+      <WaveOverlay delay={0.6} duration={1.4} onComplete={handleWaveComplete} />
 
       {/* ===== 视频背景 ===== */}
       <div className="hero-video-bg">
-        {/* 视频1：开场视频，波浪结束后按需加载播放，播放完毕后隐藏 */}
         <video
           ref={video1Ref}
           className={`hero-video ${!video1Playing ? 'hero-video-hidden' : ''}`}
@@ -137,7 +130,6 @@ export function HeroSection() {
         >
           <source src={`${basePath}/videos/fv_movie1.mp4`} type="video/mp4" />
         </video>
-        {/* 视频2：循环视频，初始隐藏，视频1结束后按需加载显示并循环 */}
         <video
           ref={video2Ref}
           className={`hero-video ${!video2Playing ? 'hero-video-hidden' : ''}`}
@@ -150,14 +142,11 @@ export function HeroSection() {
           <source src={`${basePath}/videos/fv_movie2.mp4`} type="video/mp4" />
         </video>
 
-        {/* 深色遮罩 - 增加文字可读性 */}
         <div className="hero-video-mask" />
       </div>
 
-      {/* ===== 中心文字（站名 + 标语，渐隐） ===== */}
-      <div
-        className={`hero-center-text ${centerTextGone ? 'hero-center-text-out' : ''}`}
-      >
+      {/* ===== 中心文字 ===== */}
+      <div ref={centerTextRef} className="hero-center-text">
         <h1 className="text-5xl font-bold tracking-wider text-white sm:text-7xl">
           {siteConfig.name}
         </h1>
@@ -167,9 +156,8 @@ export function HeroSection() {
       </div>
 
       {/* ===== 右侧作者信息卡片 ===== */}
-      <div className={`hero-author-card ${authorVisible ? 'hero-author-visible' : ''}`}>
+      <div ref={authorCardRef} className="hero-author-card" style={{ visibility: 'hidden' }}>
         <div className="hero-author-glass">
-          {/* 导航栏（浮动在 Hero 顶部） */}
           <nav className="hero-nav">
             <Link href="/" className="hero-nav-logo">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white backdrop-blur-sm">
@@ -190,7 +178,6 @@ export function HeroSection() {
             </div>
           </nav>
 
-          {/* 作者信息 */}
           <div className="hero-author-content">
             <div className="mb-5 flex justify-center">
               <div className="h-28 w-28 overflow-hidden rounded-full ring-4 ring-white/20">
@@ -210,7 +197,6 @@ export function HeroSection() {
               {siteConfig.author.bio}
             </p>
 
-            {/* 社交链接 */}
             <div className="mb-5 flex justify-center gap-3">
               {siteConfig.author.github && (
                 <a
@@ -250,7 +236,7 @@ export function HeroSection() {
       </div>
 
       {/* ===== 滚动指示器 ===== */}
-      <div className={`hero-scroll-indicator ${authorVisible ? 'hero-scroll-visible' : ''}`}>
+      <div ref={scrollIndicatorRef} className="hero-scroll-indicator" style={{ visibility: 'hidden' }}>
         <div className="hero-scroll-arrow">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 5v14M19 12l-7 7-7-7" />
