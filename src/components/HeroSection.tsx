@@ -121,9 +121,8 @@ export function HeroSection() {
     <section className="hero-section relative h-screen w-full overflow-hidden">
       {/* ===== 蓝色波浪遮罩（GSAP 驱动） ===== */}
       <WaveOverlay
-        delay={0.6}
-        duration={2.6}
-        revealAt={0.55}
+        delay={0.4}
+        revealAt={0.5}
         onReveal={handleWaveReveal}
         onComplete={handleWaveComplete}
       />

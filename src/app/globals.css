@@ -175,17 +175,19 @@ code[data-theme='github-dark'] {
   contain: layout style paint;
 }
 
-/* 潮水遮罩 SVG 主水体 —— 渐变色由 CSS 变量控制，随深色模式切换
-   波浪形上边缘（潮线）以上透明，以下蓝色渐变 = 真正的潮水形状 */
+/* 潮水遮罩 SVG —— 渐变色由 CSS 变量控制，随深色模式切换
+   四段渐变：泡沫白 → 浅蓝（海面）→ 中蓝 → 深蓝（海底） */
 .wave-body-svg {
+  --ocean-foam: rgba(220, 240, 255, 0.85);
   --ocean-top: #7ab8e8;
   --ocean-mid: #469ce5;
   --ocean-bottom: #1e6bbf;
 }
 .dark .wave-body-svg {
+  --ocean-foam: rgba(180, 210, 240, 0.7);
   --ocean-top: #1a3868;
   --ocean-mid: #0f1d3a;
-  --ocean-bottom: #0a1530;
+  --ocean-bottom: #050a1c;
 }
 
 /* 保留旧类名占位，避免遗留引用编译告警 */
