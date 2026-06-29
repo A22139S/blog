@@ -15,12 +15,13 @@ interface WaveOverlayProps {
 }
 
 /**
- * 蓝色波浪遮罩：5 层 SVG 波浪叠加，从顶部滑出屏幕
- * 由 GSAP 驱动，自动 cleanup，支持 prefers-reduced-motion
+ * 蓝色波浪遮罩：全屏蓝色海洋 + 底部 5 层 SVG 波浪叠加
+ * 由 GSAP 驱动整体下滑（海洋下沉），露出后面的视频和首页
+ * 自动 cleanup，支持 prefers-reduced-motion
  */
 export function WaveOverlay({
-  delay = 1,
-  duration = 1.2,
+  delay = 0.6,
+  duration = 1.4,
   onComplete,
 }: WaveOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -31,33 +32,33 @@ export function WaveOverlay({
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // 浅色/深色模式颜色
+    // 浅色/深色模式渐变色（自上而下：浅→深，模拟海面到海底）
     const isDark = document.documentElement.classList.contains('dark')
-    const bgColor = isDark ? '#0f1d3a' : '#469ce5'
-
-    // 用 CSS 渐变替代纯色，制造海平面层次的视觉
     const gradientBg = isDark
-      ? 'linear-gradient(180deg, #0a1530 0%, #0f1d3a 50%, #1a3868 100%)'
-      : 'linear-gradient(180deg, #1e6bbf 0%, #469ce5 50%, #7ab8e8 100%)'
+      ? 'linear-gradient(180deg, #1a3868 0%, #0f1d3a 60%, #0a1530 100%)'
+      : 'linear-gradient(180deg, #7ab8e8 0%, #469ce5 60%, #1e6bbf 100%)'
 
     overlay.style.background = gradientBg
-    gsap.set(overlay, {
-      yPercent: -8,
-    })
+    // 初始位置：完整覆盖屏幕（yPercent: 0）
+    gsap.set(overlay, { yPercent: 0 })
 
-    // 5 层波浪独立浮动（持续动画）
+    // 5 层波浪在底部小幅起伏（持续动画）
     const waveEls = overlay.querySelectorAll<HTMLElement>('.wave-layer')
+    const waveTweens: gsap.core.Tween[] = []
     waveEls.forEach((el, i) => {
-      gsap.to(el, {
-        y: `${10 - i * 2}`,
+      // 每层错开相位与幅度，制造层次感
+      const tween = gsap.to(el, {
+        y: `${-8 - i * 2}`,
         duration: 3 + i * 0.5,
         ease: 'sine.inOut',
         repeat: -1,
         yoyo: true,
+        delay: i * 0.2,
       })
+      waveTweens.push(tween)
     })
 
-    // 整体下滑动画
+    // 整体下滑动画：海洋向下沉，露出后面的视频和首页
     const tl = gsap.timeline({
       delay,
       onComplete: () => onComplete?.(),
@@ -69,14 +70,15 @@ export function WaveOverlay({
       ease: 'power3.inOut',
     })
 
+    // 尊重 prefers-reduced-motion：直接跳到结束状态
     if (reduceMotion) {
-      tl.duration(0)
-      waveEls.forEach((el) => gsap.killTweensOf(el))
+      tl.progress(1)
+      waveTweens.forEach((t) => t.kill())
     }
 
     return () => {
       tl.kill()
-      waveEls.forEach((el) => gsap.killTweensOf(el))
+      waveTweens.forEach((t) => t.kill())
     }
   }, [delay, duration, onComplete])
 
@@ -88,12 +90,12 @@ export function WaveOverlay({
       aria-hidden
     >
       <div className="hero-waves">
-        {/* SVG 翻转 180°：原始设计是水面波纹（贴底边），翻转后变为贴顶边的下滑边缘 */}
-        <img src={`${basePath}/waves/wave-5.svg`} alt="" className="wave-layer wave-flip" style={{ opacity: 0.5 }} />
-        <img src={`${basePath}/waves/wave-4.svg`} alt="" className="wave-layer wave-flip" style={{ opacity: 0.6 }} />
-        <img src={`${basePath}/waves/wave-3.svg`} alt="" className="wave-layer wave-flip" style={{ opacity: 0.7 }} />
-        <img src={`${basePath}/waves/wave-2.svg`} alt="" className="wave-layer wave-flip" style={{ opacity: 0.8 }} />
-        <img src={`${basePath}/waves/wave-1.svg`} alt="" className="wave-layer wave-flip" style={{ opacity: 0.9 }} />
+        {/* 5 层 SVG 波浪贴底叠加：保持原始 1920x200 比例，呈现真实水面波浪 */}
+        <img src={`${basePath}/waves/wave-5.svg`} alt="" className="wave-layer" style={{ opacity: 0.5 }} />
+        <img src={`${basePath}/waves/wave-4.svg`} alt="" className="wave-layer" style={{ opacity: 0.6 }} />
+        <img src={`${basePath}/waves/wave-3.svg`} alt="" className="wave-layer" style={{ opacity: 0.7 }} />
+        <img src={`${basePath}/waves/wave-2.svg`} alt="" className="wave-layer" style={{ opacity: 0.8 }} />
+        <img src={`${basePath}/waves/wave-1.svg`} alt="" className="wave-layer" style={{ opacity: 0.9 }} />
       </div>
     </div>
   )

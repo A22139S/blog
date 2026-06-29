@@ -182,23 +182,19 @@ code[data-theme='github-dark'] {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  overflow: hidden;
 }
 
+/* 波浪图层：保持原始 1920x200 比例，贴 overlay 底边显示真实水面波浪 */
 .hero-waves img.wave-layer {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
+  object-position: bottom;
   will-change: transform;
-  /* 轻微模糊让波浪边缘柔和、自然 */
-  filter: blur(2px);
-}
-
-/* SVG 翻转 180°：原始设计是水面波纹（贴底边），翻转后贴合顶边下滑边缘 */
-.wave-flip {
-  transform: rotate(180deg);
 }
 
 /* 保留旧类名（避免 HeroSection 中删除 className 的碎片改动） */
@@ -207,7 +203,8 @@ code[data-theme='github-dark'] {
 .hero-wave-2,
 .hero-wave-3,
 .hero-wave-4,
-.hero-wave-5 {
+.hero-wave-5,
+.wave-flip {
   /* 当前未使用，留作占位避免编译警告 */
 }
 
