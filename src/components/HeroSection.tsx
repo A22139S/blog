@@ -45,8 +45,10 @@ export function HeroSection() {
     }
   }, [])
 
-  // 波浪动画结束后触发视频播放 + 中心文字淡出 + 作者卡片淡入
-  const handleWaveComplete = useCallback(() => {
+  // 退潮中途（潮线已下移约 55%，视频上半部分露出）→ 开始播放视频1
+  // 视频在波浪还在退去的过程中就开始播放，被波浪遮挡的部分用户看不到，
+  // 随着潮线下沉，视频逐渐露出且已在播放中 = 自然衔接，无空白
+  const handleWaveReveal = useCallback(() => {
     const v1 = video1Ref.current
     if (v1) {
       if (v1.readyState >= 3) {
@@ -60,7 +62,10 @@ export function HeroSection() {
         }, { once: true })
       }
     }
+  }, [safePlay])
 
+  // 波浪完全退去后：中心文字淡出 + 作者卡片淡入 + 滚动指示器淡入
+  const handleWaveComplete = useCallback(() => {
     // GSAP 中心文字淡出
     if (centerTextRef.current) {
       gsap.to(centerTextRef.current, {
@@ -89,7 +94,7 @@ export function HeroSection() {
         { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', delay: 1.5 }
       )
     }
-  }, [safePlay])
+  }, [])
 
   // 视频1播放完毕后切换到视频2
   const handleVideo1Ended = useCallback(() => {
@@ -115,7 +120,13 @@ export function HeroSection() {
   return (
     <section className="hero-section relative h-screen w-full overflow-hidden">
       {/* ===== 蓝色波浪遮罩（GSAP 驱动） ===== */}
-      <WaveOverlay delay={0.6} duration={1.4} onComplete={handleWaveComplete} />
+      <WaveOverlay
+        delay={0.6}
+        duration={2.6}
+        revealAt={0.55}
+        onReveal={handleWaveReveal}
+        onComplete={handleWaveComplete}
+      />
 
       {/* ===== 视频背景 ===== */}
       <div className="hero-video-bg">
@@ -124,7 +135,7 @@ export function HeroSection() {
           className={`hero-video ${!video1Playing ? 'hero-video-hidden' : ''}`}
           muted
           playsInline
-          preload="none"
+          preload="auto"
           poster={`${basePath}/images/hero-poster.webp`}
           onEnded={handleVideo1Ended}
         >

@@ -8,6 +8,10 @@ interface WaveOverlayProps {
   delay?: number
   /** 下滑动画总时长（秒） */
   duration?: number
+  /** 退潮进度达到该阈值时触发 onReveal（0~1），用于提前启动视频衔接 */
+  revealAt?: number
+  /** 退潮进度达到 revealAt 时的回调（视频可在此开始播放） */
+  onReveal?: () => void
   /** 动画结束后的回调 */
   onComplete?: () => void
 }
@@ -19,18 +23,28 @@ interface WaveOverlayProps {
  * 平移满一个周期后形状与起点完全一致 → GSAP linear repeat 无缝循环。
  *
  * 退潮机制：GSAP timeline 驱动整个 overlay 容器 yPercent 0→110（向下退出）。
+ * 退潮进度达到 revealAt 时触发 onReveal，让视频提前开始播放实现自然衔接。
  *
  * 上方（波浪线以上）透明露出视频，下方蓝色渐变 = 真正的潮水形状而非方块。
  */
 export function WaveOverlay({
   delay = 0.6,
-  duration = 1.4,
+  duration = 2.6,
+  revealAt = 0.55,
+  onReveal,
   onComplete,
 }: WaveOverlayProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const waterPathRef = useRef<SVGPathElement>(null)
   const ripple1Ref = useRef<SVGPathElement>(null)
   const ripple2Ref = useRef<SVGPathElement>(null)
+  // 用 ref 保存回调，避免回调变化导致 useEffect 重新执行（动画中断）
+  const onRevealRef = useRef(onReveal)
+  const onCompleteRef = useRef(onComplete)
+  useEffect(() => {
+    onRevealRef.current = onReveal
+    onCompleteRef.current = onComplete
+  })
 
   useEffect(() => {
     const overlay = overlayRef.current
@@ -46,7 +60,7 @@ export function WaveOverlay({
     const WAVE_PERIOD = 320
     const flowTweens: gsap.core.Tween[] = []
 
-    // 主水体潮线向右流动（8s 一个周期）
+    // 主水体潮线向右流动（4s 一个周期 —— 加快流速，更有水流质感）
     if (waterPathRef.current) {
       flowTweens.push(
         gsap.fromTo(
@@ -54,7 +68,7 @@ export function WaveOverlay({
           { attr: { transform: 'translate(0,0)' } },
           {
             attr: { transform: `translate(${WAVE_PERIOD},0)` },
-            duration: 8,
+            duration: 4,
             ease: 'none',
             repeat: -1,
           }
@@ -62,7 +76,7 @@ export function WaveOverlay({
       )
     }
 
-    // 涟漪向右流动（速度略快，制造层次感）
+    // 涟漪向右流动（比主水体更快，制造层次感）
     ;[ripple1Ref.current, ripple2Ref.current].forEach((el, i) => {
       if (!el) return
       flowTweens.push(
@@ -71,7 +85,7 @@ export function WaveOverlay({
           { attr: { transform: 'translate(0,0)' } },
           {
             attr: { transform: `translate(${WAVE_PERIOD},0)` },
-            duration: 6 - i,
+            duration: 3 - i * 0.5,
             ease: 'none',
             repeat: -1,
           }
@@ -80,14 +94,23 @@ export function WaveOverlay({
     })
 
     // 退潮：整体下滑，潮线从顶部下移至屏幕外
+    // 用 power2.inOut 让退潮更柔和缓慢，避免突兀
+    let revealFired = false
     const tl = gsap.timeline({
       delay,
-      onComplete: () => onComplete?.(),
+      onComplete: () => onCompleteRef.current?.(),
+      onUpdate: function () {
+        // 退潮进度达到阈值时触发 onReveal（只触发一次）
+        if (!revealFired && this.progress() >= revealAt) {
+          revealFired = true
+          onRevealRef.current?.()
+        }
+      },
     })
     tl.to(overlay, {
       yPercent: 110,
       duration,
-      ease: 'power3.inOut',
+      ease: 'power2.inOut',
     })
 
     // 尊重 prefers-reduced-motion：直接跳到结束状态
@@ -100,7 +123,7 @@ export function WaveOverlay({
       tl.kill()
       flowTweens.forEach((t) => t.kill())
     }
-  }, [delay, duration, onComplete])
+  }, [delay, duration, revealAt])
 
   return (
     <div
