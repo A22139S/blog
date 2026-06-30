@@ -178,7 +178,8 @@ code[data-theme='github-dark'] {
 /* ===== P3R 风格海浪加载动画 ===== */
 /* 严格参考 https://asia.sega.com/p3r/cn/ 官网加载动画 */
 
-/* 蓝色水体盒子：覆盖全屏，退潮时向下滑出 */
+/* 蓝色水体盒子：覆盖全屏，退潮时向下滑出
+   注意：不能设 overflow:hidden，否则 top:-10vh 的 SVG 波浪会被裁剪 */
 .p3r-wave-box {
   position: absolute;
   top: 0;
@@ -186,7 +187,6 @@ code[data-theme='github-dark'] {
   width: 100%;
   height: 100%;
   background: #029eeb; /* P3R 标志性亮蓝 */
-  overflow: hidden;
   transform: translateY(0);
   /* 退潮过渡：2.5s + P3R 原版缓动（略微过冲 = 水的惯性） */
   transition: transform 2.5s cubic-bezier(0.03, 0.1, 0.25, 1.02);

@@ -109,7 +109,7 @@ export function WaveOverlay({
     <div
       ref={overlayRef}
       className="hero-wave-overlay"
-      style={{ position: 'fixed', inset: 0, zIndex: 999, pointerEvents: 'none' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 999, pointerEvents: 'none', overflow: 'hidden' }}
       aria-hidden
     >
       {/*
