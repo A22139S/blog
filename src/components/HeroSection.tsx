@@ -109,28 +109,15 @@ export function HeroSection() {
     const v2 = video2Ref.current
     if (!v2 || !video2Playing) return
 
-    // 优先使用 requestVideoFrameCallback（每帧检测，精度高）
-    if ('requestVideoFrameCallback' in v2) {
-      let handle: number
-      const checkLoop = (_now: number, metadata: { mediaTime: number }) => {
-        // 当前帧媒体时间距结尾 < 80ms（约 2 帧）时提前重置
-        if (metadata.mediaTime > v2.duration - 0.08) {
-          v2.currentTime = 0
-        }
-        handle = (v2 as any).requestVideoFrameCallback(checkLoop)
-      }
-      handle = (v2 as any).requestVideoFrameCallback(checkLoop)
-      return () => (v2 as any).cancelVideoFrameCallback?.(handle)
-    }
-
-    // 回退：timeupdate（约 250ms 精度，可能跳过结尾几帧但不会黑屏）
-    const onTimeUpdate = () => {
-      if (v2.currentTime > v2.duration - 0.2) {
+    let handle: number
+    const checkLoop = (_now: number, metadata: { mediaTime: number }) => {
+      if (metadata.mediaTime > v2.duration - 0.08) {
         v2.currentTime = 0
       }
+      handle = (v2 as any).requestVideoFrameCallback(checkLoop)
     }
-    v2.addEventListener('timeupdate', onTimeUpdate)
-    return () => v2.removeEventListener('timeupdate', onTimeUpdate)
+    handle = (v2 as any).requestVideoFrameCallback(checkLoop)
+    return () => (v2 as any).cancelVideoFrameCallback?.(handle)
   }, [video2Playing])
 
   // 视频1播放完毕后切换到视频2
