@@ -48,6 +48,7 @@ export function HeroSection() {
   // 退潮中途（潮线已下移约 55%，视频上半部分露出）→ 开始播放视频1
   // 视频在波浪还在退去的过程中就开始播放，被波浪遮挡的部分用户看不到，
   // 随着潮线下沉，视频逐渐露出且已在播放中 = 自然衔接，无空白
+  // 同时预加载视频2，确保切换时 readyState 已就绪，避免黑屏
   const handleWaveReveal = useCallback(() => {
     const v1 = video1Ref.current
     if (v1) {
@@ -61,6 +62,12 @@ export function HeroSection() {
           setVideo1Playing(true)
         }, { once: true })
       }
+    }
+
+    // 提前预加载视频2（与视频1播放并行），确保切换时无需等待
+    const v2 = video2Ref.current
+    if (v2 && v2.readyState < 3) {
+      v2.load()
     }
   }, [safePlay])
 
@@ -96,24 +103,115 @@ export function HeroSection() {
     }
   }, [])
 
-  // 视频1播放完毕后切换到视频2
-  const handleVideo1Ended = useCallback(() => {
-    setVideo1Playing(false)
-    if (video1Ref.current) {
-      video1Ref.current.style.display = 'none'
-    }
+  // 视频2无缝循环：用 requestVideoFrameCallback 检测接近结尾时提前 seek 到 0
+  // 避免原生 loop 属性在 6.667s→0s 重置时的 1 帧黑屏（实测 brt:0 闪帧）
+  useEffect(() => {
     const v2 = video2Ref.current
-    if (v2) {
-      if (v2.readyState >= 3) {
-        safePlay(v2)
-        setVideo2Playing(true)
-      } else {
-        v2.load()
-        v2.addEventListener('canplay', () => {
-          safePlay(v2)
-          setVideo2Playing(true)
-        }, { once: true })
+    if (!v2 || !video2Playing) return
+
+    // 优先使用 requestVideoFrameCallback（每帧检测，精度高）
+    if ('requestVideoFrameCallback' in v2) {
+      let handle: number
+      const checkLoop = (_now: number, metadata: { mediaTime: number }) => {
+        // 当前帧媒体时间距结尾 < 80ms（约 2 帧）时提前重置
+        if (metadata.mediaTime > v2.duration - 0.08) {
+          v2.currentTime = 0
+        }
+        handle = (v2 as any).requestVideoFrameCallback(checkLoop)
       }
+      handle = (v2 as any).requestVideoFrameCallback(checkLoop)
+      return () => (v2 as any).cancelVideoFrameCallback?.(handle)
+    }
+
+    // 回退：timeupdate（约 250ms 精度，可能跳过结尾几帧但不会黑屏）
+    const onTimeUpdate = () => {
+      if (v2.currentTime > v2.duration - 0.2) {
+        v2.currentTime = 0
+      }
+    }
+    v2.addEventListener('timeupdate', onTimeUpdate)
+    return () => v2.removeEventListener('timeupdate', onTimeUpdate)
+  }, [video2Playing])
+
+  // 视频1播放完毕后切换到视频2
+  // 关键防黑屏措施（三重保障）：
+  //   1. 禁用 CSS transition（避免与 GSAP opacity 动画冲突导致 1 帧闪屏）
+  //   2. 在 setVideo2Playing(true) 移除 hero-video-hidden 类之前，先设置 v2.style.opacity='0'
+  //      否则类移除后 CSS 默认 opacity=1，GSAP 会把 1 当作起始值 → v2 瞬间全显（非渐变）
+  //   3. safePlay(v2) 后用 requestVideoFrameCallback + setTimeout 回退等待首帧渲染
+  //      requestVideoFrameCallback 在 video opacity:0 时可能不触发（浏览器优化），
+  //      用 100ms setTimeout 保底确保 beginFade 一定会被调用
+  //   4. video1 延迟 0.2s 才开始淡出，此时 video2 已有较高 opacity，绝不会同时透明
+  const handleVideo1Ended = useCallback(() => {
+    const v1 = video1Ref.current
+    const v2 = video2Ref.current
+    if (!v1 || !v2) return
+
+    // 禁用 CSS transition，让 GSAP 完全接管 opacity 动画
+    v1.style.transition = 'none'
+    v2.style.transition = 'none'
+
+    const startCrossFade = () => {
+      // video2 开始播放（此时 video2 opacity 仍为 0，不可见）
+      safePlay(v2)
+
+      let fadeStarted = false
+      const beginFade = () => {
+        if (fadeStarted) return
+        fadeStarted = true
+
+        // 关键：在 setVideo2Playing(true) 移除 hero-video-hidden 类之前，
+        // 先设置内联 opacity:0。否则类移除后 CSS 默认 opacity 变为 1，
+        // GSAP 会把 1 当作起始值，导致 v2 瞬间全显（而非从 0 渐变到 1）
+        v2.style.opacity = '0'
+
+        // GSAP 交叉淡入淡出：
+        // v2: opacity 0 → 1 (0.5s, power2.out 先快后慢)
+        // v1: opacity 1 → 0 (0.5s, delay 0.2s, power2.in 先慢后快)
+        gsap.to(v2, {
+          opacity: 1,
+          duration: 0.5,
+          ease: 'power2.out',
+          onStart: () => { v2.style.pointerEvents = 'auto' },
+        })
+        gsap.to(v1, {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in',
+          delay: 0.2,
+          onComplete: () => {
+            v1.pause()
+            v1.style.display = 'none'
+            setVideo1Playing(false)
+          },
+        })
+        setVideo2Playing(true)
+      }
+
+      // 混合策略：requestVideoFrameCallback + setTimeout 回退
+      // requestVideoFrameCallback 在 video opacity:0 时可能不触发（浏览器优化）
+      // 用 100ms setTimeout 作为保底，确保 beginFade 一定会被调用
+      if ('requestVideoFrameCallback' in v2) {
+        const rvfcHandle = (v2 as any).requestVideoFrameCallback(() => beginFade())
+        setTimeout(() => {
+          if (!fadeStarted) {
+            (v2 as any).cancelVideoFrameCallback?.(rvfcHandle)
+            beginFade()
+          }
+        }, 100)
+      } else {
+        setTimeout(beginFade, 50)
+      }
+    }
+
+    // video2 应已预加载（preload=auto），检查 readyState
+    if (v2.readyState >= 3) {
+      startCrossFade()
+    } else {
+      // 兜底：极少数情况下 video2 还没就绪，load 后等 canplay
+      // 此时 video1 仍显示最后一帧（不 display:none），不会黑屏
+      v2.load()
+      v2.addEventListener('canplay', startCrossFade, { once: true })
     }
   }, [safePlay])
 
@@ -144,9 +242,8 @@ export function HeroSection() {
           ref={video2Ref}
           className={`hero-video ${!video2Playing ? 'hero-video-hidden' : ''}`}
           muted
-          loop
           playsInline
-          preload="none"
+          preload="auto"
           poster={`${basePath}/images/hero-poster.webp`}
         >
           <source src={`${basePath}/videos/fv_movie2.mp4`} type="video/mp4" />
