@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono } from 'next/font/google'
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { siteConfig } from '@/lib/config'
@@ -7,11 +7,12 @@ import { ConditionalHeader } from '@/components/ConditionalHeader'
 import { Footer } from '@/components/Footer'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
-// 字体配置
-const fontSans = Inter({
+// 字体配置 — 替换默认 Inter 为更有特征的 Plus Jakarta Sans
+const fontSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
 })
 
 const fontMono = JetBrains_Mono({
@@ -109,12 +110,20 @@ export default function RootLayout({
         </Script>
       )}
       <body className="min-h-screen bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+        {/* 跳过导航链接 — 键盘用户无障碍 */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary-600 focus:px-4 focus:py-2 focus:text-white"
+        >
+          跳转到主内容
+        </a>
+
         {/* 深色模式提供者（语义容器） */}
         <ThemeProvider>
           <div className="flex min-h-screen flex-col">
             <ConditionalHeader />
             {/* 主内容区域 */}
-            <main className="flex-1 animate-fade-in">{children}</main>
+            <main id="main-content" className="flex-1">{children}</main>
             <Footer />
           </div>
         </ThemeProvider>
