@@ -20,6 +20,7 @@ export const siteConfig = {
   nav: [
     { label: '首页', href: '/' },
     { label: '博客', href: '/blog' },
+    { label: '作品集', href: '/portfolio' },
     { label: '关于', href: '/about' },
   ],
   /** Open Graph 默认图片（用于社交媒体预览） */

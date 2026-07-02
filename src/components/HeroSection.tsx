@@ -241,10 +241,10 @@ export function HeroSection() {
 
       {/* ===== 中心文字 ===== */}
       <div ref={centerTextRef} className="hero-center-text">
-        <h1 className="text-5xl font-bold tracking-wider text-white sm:text-7xl">
+        <h1 className="text-5xl font-bold tracking-wider text-gray-900 sm:text-7xl">
           {siteConfig.name}
         </h1>
-        <p className="mt-4 text-lg text-white/80 sm:text-xl">
+        <p className="mt-4 text-lg text-gray-600 sm:text-xl">
           {siteConfig.tagline}
         </p>
       </div>
@@ -254,7 +254,7 @@ export function HeroSection() {
         <div className="hero-author-glass">
           <nav className="hero-nav">
             <Link href="/" className="hero-nav-logo">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white backdrop-blur-sm">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900/10 text-sm font-bold text-gray-700 backdrop-blur-sm">
                 B
               </span>
             </Link>
@@ -263,7 +263,7 @@ export function HeroSection() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
                   {item.label}
                 </Link>
@@ -274,7 +274,7 @@ export function HeroSection() {
 
           <div className="hero-author-content">
             <div className="mb-5 flex justify-center">
-              <div className="h-28 w-28 overflow-hidden rounded-full ring-4 ring-white/20">
+              <div className="h-28 w-28 overflow-hidden rounded-full ring-4 ring-gray-200/60">
                 <AvatarWithFallback
                   src={`${basePath}${siteConfig.author.avatar}`}
                   fallback={authorInitial}
@@ -283,11 +283,11 @@ export function HeroSection() {
               </div>
             </div>
 
-            <h2 className="mb-2 text-center text-xl font-bold text-white">
+            <h2 className="mb-2 text-center text-xl font-bold text-gray-800">
               {siteConfig.author.name}
             </h2>
 
-            <p className="mb-5 text-center text-sm leading-relaxed text-white/70">
+            <p className="mb-5 text-center text-sm leading-relaxed text-gray-500">
               {siteConfig.author.bio}
             </p>
 
@@ -297,7 +297,7 @@ export function HeroSection() {
                   href={siteConfig.author.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
                   aria-label="GitHub"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -308,7 +308,7 @@ export function HeroSection() {
               {siteConfig.author.email && (
                 <a
                   href={`mailto:${siteConfig.author.email}`}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700"
                   aria-label="Email"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -321,7 +321,7 @@ export function HeroSection() {
 
             <Link
               href="/about"
-              className="inline-block w-full rounded-lg bg-white/15 py-2.5 text-center text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+              className="inline-block w-full rounded-lg bg-gray-900/5 py-2.5 text-center text-sm font-medium text-gray-700 backdrop-blur-sm transition-colors hover:bg-gray-900/10"
             >
               了解更多 →
             </Link>
@@ -336,7 +336,7 @@ export function HeroSection() {
             <path d="M12 5v14M19 12l-7 7-7-7" />
           </svg>
         </div>
-        <span className="text-xs text-white/50">向下滚动</span>
+        <span className="text-xs text-gray-400">向下滚动</span>
       </div>
     </section>
   )

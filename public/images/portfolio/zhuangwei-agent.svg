@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e3a6e"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="nodeRAG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="nodeAgent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.06" stroke="#60a5fa" stroke-width="0.5">
+    <line x1="0" y1="100" x2="800" y2="100"/><line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="300" x2="800" y2="300"/><line x1="0" y1="400" x2="800" y2="400"/>
+    <line x1="100" y1="0" x2="100" y2="500"/><line x1="200" y1="0" x2="200" y2="500"/>
+    <line x1="300" y1="0" x2="300" y2="500"/><line x1="400" y1="0" x2="400" y2="500"/>
+    <line x1="500" y1="0" x2="500" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/>
+    <line x1="700" y1="0" x2="700" y2="500"/>
+  </g>
+
+  <!-- Top-right accent shapes -->
+  <circle cx="700" cy="80" r="120" fill="#3b82f6" opacity="0.08"/>
+  <circle cx="740" cy="120" r="60" fill="#06b6d4" opacity="0.06"/>
+
+  <!-- Connection lines between nodes -->
+  <g stroke="#4b5563" stroke-width="1.5" fill="none" opacity="0.4">
+    <path d="M130,280 L195,280" marker-end="url(#arrow)"/>
+    <path d="M130,310 L195,310"/>
+    <path d="M345,220 L410,220"/>
+    <path d="M345,340 L410,340"/>
+    <path d="M560,220 L625,220"/>
+    <path d="M560,340 L625,340"/>
+    <path d="M345,280 L410,280"/>
+    <line x1="195" y1="220" x2="195" y2="340"/>
+    <line x1="410" y1="220" x2="410" y2="280"/>
+    <line x1="410" y1="280" x2="410" y2="340"/>
+    <line x1="625" y1="220" x2="625" y2="280"/>
+    <line x1="625" y1="280" x2="625" y2="340"/>
+  </g>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#6b7280" opacity="0.5"/>
+    </marker>
+  </defs>
+
+  <!-- Data flow arrows (animated-style dashed) -->
+  <g stroke="#6b7280" stroke-width="1" stroke-dasharray="4,3" fill="none" opacity="0.3">
+    <line x1="260" y1="220" x2="280" y2="220"/>
+    <line x1="260" y1="340" x2="280" y2="340"/>
+    <line x1="475" y1="220" x2="495" y2="220"/>
+    <line x1="475" y1="340" x2="495" y2="340"/>
+  </g>
+
+  <!-- Node: 图像输入 -->
+  <g transform="translate(50,255)">
+    <rect x="0" y="0" width="80" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="40" y="21" text-anchor="middle" fill="#60a5fa" font-size="11" font-family="system-ui,sans-serif">📷</text>
+    <text x="40" y="40" text-anchor="middle" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">图像输入</text>
+  </g>
+
+  <!-- Node: 分类 Agent -->
+  <g transform="translate(195,210)">
+    <rect x="0" y="0" width="65" height="65" rx="10" fill="url(#nodeGrad)" opacity="0.9" filter="url(#glow)"/>
+    <text x="32" y="28" text-anchor="middle" fill="#bfdbfe" font-size="10" font-family="system-ui,sans-serif">🔍</text>
+    <text x="32" y="47" text-anchor="middle" fill="#fff" font-size="11" font-family="system-ui,sans-serif" font-weight="600">分类</text>
+    <text x="32" y="60" text-anchor="middle" fill="#bfdbfe" font-size="9" font-family="system-ui,sans-serif">Branch</text>
+  </g>
+
+  <!-- Node: 分类 Agent -->
+  <g transform="translate(195,295)">
+    <rect x="0" y="0" width="65" height="55" rx="10" fill="url(#nodeGrad)" opacity="0.6"/>
+    <text x="32" y="22" text-anchor="middle" fill="#bfdbfe" font-size="10">🧠</text>
+    <text x="32" y="40" text-anchor="middle" fill="#fff" font-size="11" font-family="system-ui,sans-serif" font-weight="600">规划</text>
+    <text x="32" y="52" text-anchor="middle" fill="#bfdbfe" font-size="9" font-family="system-ui,sans-serif">Plan</text>
+  </g>
+
+  <!-- Node: RAG 检索 -->
+  <g transform="translate(410,200)">
+    <rect x="0" y="0" width="65" height="65" rx="10" fill="url(#nodeRAG)" opacity="0.9" filter="url(#glow)"/>
+    <text x="32" y="28" text-anchor="middle" fill="#cffafe" font-size="10">📚</text>
+    <text x="32" y="46" text-anchor="middle" fill="#fff" font-size="11" font-family="system-ui,sans-serif" font-weight="600">RAG</text>
+    <text x="32" y="59" text-anchor="middle" fill="#cffafe" font-size="9" font-family="system-ui,sans-serif">检索</text>
+  </g>
+
+  <!-- Node: MAC 检测 -->
+  <g transform="translate(625,200)">
+    <rect x="0" y="0" width="65" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="32" y="26" text-anchor="middle" fill="#06b6d4" font-size="12">MAC</text>
+    <text x="32" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">码检测</text>
+  </g>
+
+  <!-- Node: 着装检测 -->
+  <g transform="translate(625,310)">
+    <rect x="0" y="0" width="65" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="32" y="26" text-anchor="middle" fill="#06b6d4" font-size="12">👔</text>
+    <text x="32" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">着装检测</text>
+  </g>
+
+  <!-- Node: ReAct Agent (central orchestrator) -->
+  <g transform="translate(410,280)">
+    <rect x="0" y="0" width="65" height="55" rx="10" fill="url(#nodeAgent)" opacity="0.9" filter="url(#glow)"/>
+    <text x="32" y="26" text-anchor="middle" fill="#e9d5ff" font-size="12">🤖</text>
+    <text x="32" y="44" text-anchor="middle" fill="#fff" font-size="11" font-family="system-ui,sans-serif" font-weight="600">ReAct</text>
+    <text x="32" y="55" text-anchor="middle" fill="#e9d5ff" font-size="9" font-family="system-ui,sans-serif">Agent</text>
+  </g>
+
+  <!-- Output node -->
+  <g transform="translate(710,255)">
+    <rect x="0" y="0" width="65" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <text x="32" y="26" text-anchor="middle" fill="#10b981" font-size="12">✓</text>
+    <text x="32" y="45" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">质检结果</text>
+  </g>
+
+  <!-- Top-left title block -->
+  <g transform="translate(40,35)">
+    <text x="0" y="0" fill="#fff" font-size="18" font-family="system-ui,sans-serif" font-weight="700">装维图片质检系统</text>
+    <text x="0" y="22" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">多模态 AI Agent · LangChain + LangGraph + RAG</text>
+  </g>
+
+  <!-- Bottom tech stack bar -->
+  <g transform="translate(40,440)">
+    <rect x="0" y="0" width="720" height="28" rx="14" fill="#1e293b" opacity="0.6"/>
+    <text x="360" y="18" text-anchor="middle" fill="#64748b" font-size="11" font-family="system-ui,monospace">LangGraph StateGraph · LCEL RunnableBranch · with_structured_output · Chroma/FAISS · ChatOpenAI (6 家厂商) · LangSmith</text>
+  </g>
+
+  <!-- Bottom-right metrics -->
+  <g transform="translate(600,400)">
+    <text x="0" y="0" fill="#64748b" font-size="9" font-family="system-ui,sans-serif">人力替代率</text>
+    <text x="0" y="16" fill="#10b981" font-size="16" font-family="system-ui,sans-serif" font-weight="700">90%</text>
+    <text x="80" y="0" fill="#64748b" font-size="9" font-family="system-ui,sans-serif">ROI</text>
+    <text x="80" y="16" fill="#f59e0b" font-size="16" font-family="system-ui,sans-serif" font-weight="700">55x</text>
+  </g>
+</svg>

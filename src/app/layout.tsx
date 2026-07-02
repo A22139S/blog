@@ -109,7 +109,10 @@ export default function RootLayout({
           {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "${siteConfig.analytics.clarityId}");`}
         </Script>
       )}
-      <body className="min-h-screen bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300"
+      >
         {/* 跳过导航链接 — 键盘用户无障碍 */}
         <a
           href="#main-content"

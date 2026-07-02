@@ -291,15 +291,15 @@ code[data-theme='github-dark'] {
   pointer-events: none;
 }
 
-/* 视频遮罩 - 增加文字可读性 */
+/* 视频遮罩 - 白底半透明，增强文字可读性 */
 .hero-video-mask {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(0, 0, 0, 0.5) 0%,
-    rgba(0, 0, 0, 0.2) 50%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.65) 100%
   );
   z-index: 1;
 }
@@ -337,12 +337,12 @@ code[data-theme='github-dark'] {
   opacity: 1;
 }
 
-/* 毛玻璃卡片 */
+/* 毛玻璃卡片 - 浅色主题 */
 .hero-author-glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 1rem;
   padding: 1.5rem;
   overflow: hidden;
@@ -360,7 +360,7 @@ code[data-theme='github-dark'] {
   justify-content: space-between;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .hero-nav-logo {
@@ -392,7 +392,7 @@ code[data-theme='github-dark'] {
 }
 
 .hero-scroll-arrow {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.25);
   animation: scrollBounce 2s infinite;
 }
 
@@ -402,7 +402,206 @@ code[data-theme='github-dark'] {
   60% { transform: translateY(4px); }
 }
 
-/* ===== Hero 区域移动端适配 ===== */
+/* ===== 作品集详情页富文本内容样式 ===== */
+.portfolio-detail-content {
+  @apply text-gray-600 dark:text-gray-400 leading-relaxed;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Hide the first h1 inside content since the page already has a title */
+.portfolio-detail-content h1:first-of-type {
+  @apply sr-only;
+}
+
+/* --- Headings: clean hierarchy, generous top margin, tight bottom --- */
+.portfolio-detail-content h1 {
+  @apply text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100 mt-12 mb-3 tracking-tight;
+}
+.portfolio-detail-content h2 {
+  @apply text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-10 mb-3 pb-2 border-b border-gray-100 dark:border-gray-800 tracking-tight scroll-mt-24;
+}
+.portfolio-detail-content h3 {
+  @apply text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 mt-8 mb-2 tracking-tight scroll-mt-24;
+}
+.portfolio-detail-content h4 {
+  @apply text-base md:text-lg font-medium text-gray-700 dark:text-gray-300 mt-6 mb-2 scroll-mt-24;
+}
+
+/* --- Paragraph --- */
+.portfolio-detail-content p {
+  @apply my-4 leading-[1.75];
+}
+
+/* --- Links --- */
+.portfolio-detail-content a {
+  @apply text-blue-600 dark:text-blue-400 underline underline-offset-2 decoration-blue-300 dark:decoration-blue-700 hover:decoration-blue-500 dark:hover:decoration-blue-400 transition-colors;
+}
+
+/* --- Lists --- */
+.portfolio-detail-content ul {
+  @apply list-disc pl-6 my-4 space-y-1.5;
+}
+.portfolio-detail-content ol {
+  @apply list-decimal pl-6 my-4 space-y-1.5;
+}
+.portfolio-detail-content li {
+  @apply pl-0.5;
+}
+
+/* --- Inline code --- */
+.portfolio-detail-content code:not(pre code) {
+  @apply rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.875em] font-mono text-rose-600 dark:bg-gray-800 dark:text-rose-400;
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* --- Code blocks (with highlight.js + copy button) --- */
+
+/* Wrapper around pre > code */
+.code-block-wrapper {
+  @apply relative my-6 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800;
+}
+
+/* Header bar: language label + copy button */
+.code-block-header {
+  @apply flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-100 dark:border-gray-700;
+}
+
+.code-block-lang {
+  @apply text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider;
+}
+
+.code-copy-btn {
+  @apply inline-flex items-center gap-1.5 rounded-md border border-gray-200 px-2.5 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 transition-colors;
+}
+
+.code-copy-btn.copied {
+  @apply text-green-600 border-green-200 bg-green-50 dark:text-green-400 dark:border-green-800 dark:bg-green-950/30;
+}
+
+.code-block-wrapper pre {
+  @apply m-0 !border-0 !rounded-none overflow-x-auto p-4 text-[0.875em] leading-relaxed;
+  background: #fafbfc !important;
+}
+
+.dark .code-block-wrapper pre {
+  background: #0d1117 !important;
+}
+
+/* highlight.js base — one-dark style for dark bg, github for light */
+.code-block-wrapper pre code.hljs {
+  @apply font-mono;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* --- Tables: subtle, airy, no heavy borders --- */
+.portfolio-detail-content table {
+  @apply w-full border-collapse my-8 text-sm;
+}
+.portfolio-detail-content thead {
+  @apply border-b-2 border-gray-200 dark:border-gray-700;
+}
+.portfolio-detail-content th {
+  @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400;
+}
+.portfolio-detail-content td {
+  @apply px-4 py-3 align-top border-b border-gray-100 dark:border-gray-800/60 text-gray-600 dark:text-gray-400;
+}
+.portfolio-detail-content tbody tr:hover td {
+  @apply bg-gray-50/60 dark:bg-gray-800/30;
+}
+
+/* --- Horizontal rule --- */
+.portfolio-detail-content hr {
+  @apply my-10 border-0 h-px bg-gray-200 dark:bg-gray-800;
+}
+
+/* --- Strong --- */
+.portfolio-detail-content strong {
+  @apply font-semibold text-gray-800 dark:text-gray-200;
+}
+
+/* --- Blockquote --- */
+.portfolio-detail-content blockquote {
+  @apply border-l-[3px] border-blue-400 dark:border-blue-600 pl-5 my-6 text-gray-500 dark:text-gray-400;
+  font-style: normal;
+}
+.portfolio-detail-content blockquote p {
+  @apply my-2;
+}
+
+/* --- Images --- */
+.portfolio-detail-content img {
+  @apply max-w-full rounded-lg my-6;
+}
+
+/* --- TOC sidebar --- */
+.portfolio-toc {
+  @apply text-sm;
+}
+.portfolio-toc a {
+  @apply no-underline;
+}
+
+/* Dark mode overrides for highlight.js github theme */
+.dark .code-block-wrapper pre code.hljs {
+  color: #c9d1d9;
+}
+.dark .hljs-comment,
+.dark .hljs-punctuation,
+.dark .hljs-tag {
+  color: #8b949e;
+}
+.dark .hljs-keyword,
+.dark .hljs-attr {
+  color: #ff7b72;
+}
+.dark .hljs-string,
+.dark .hljs-bullet {
+  color: #a5d6ff;
+}
+.dark .hljs-number,
+.dark .hljs-literal {
+  color: #79c0ff;
+}
+.dark .hljs-function,
+.dark .hljs-title,
+.dark .hljs-built_in {
+  color: #d2a8ff;
+}
+.dark .hljs-variable,
+.dark .hljs-template-variable {
+  color: #ffa657;
+}
+.dark .hljs-class {
+  color: #ffa657;
+}
+.dark .hljs-operator {
+  color: #ff7b72;
+}
+.dark .hljs-regexp {
+  color: #a5d6ff;
+}
+.dark .hljs-symbol {
+  color: #79c0ff;
+}
+.dark .hljs-meta {
+  color: #8b949e;
+}
+.dark .hljs-deletion {
+  color: #ffdcd7;
+  background: #67060c;
+}
+.dark .hljs-addition {
+  color: #aff5b4;
+  background: #033a16;
+}
+
+/* --- Mermaid diagram comments (placeholder for removed ASCII diagrams) --- */
+.portfolio-detail-content :is(p, div):has(+ br + br) {
+  /* Clean up empty nodes if any */
+}
 @media (max-width: 768px) {
   .hero-author-card {
     right: auto;
@@ -421,6 +620,724 @@ code[data-theme='github-dark'] {
   .hero-center-text p {
     font-size: 0.875rem;
   }
+}
+
+/* ===================================================================
+ * Article Detail — 独立博客布局
+ * 博客文章与作品集项目共用的统一详情页布局
+ * =================================================================== */
+
+/* --- 页面背景 --- */
+.ad-page {
+  min-height: 100vh;
+  background: #fafaf8;
+}
+
+/* --- 主容器：flex 两栏 --- */
+.ad-wrapper {
+  display: flex;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* ================================================================
+   左侧目录（TOC Sidebar）
+   ================================================================ */
+
+.ad-sidebar {
+  position: sticky;
+  top: 0;
+  width: 25vw;
+  min-width: 240px;
+  max-width: 320px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 3rem 1.5rem 3rem 2.5rem;
+  flex-shrink: 0;
+}
+
+/* 目录标题 */
+.ad-toc-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #999;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+/* 目录列表 */
+.ad-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 目录链接 */
+.ad-toc-link {
+  display: block;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+  text-decoration: none;
+  padding: 3px 0 3px 12px;
+  border-left: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.ad-toc-link:hover {
+  color: #e67e22;
+}
+
+/* 当前活跃章节高亮 */
+.ad-toc-link.ad-toc-active {
+  color: #c0392b;
+  border-left-color: #c0392b;
+  background: rgba(192, 57, 43, 0.04);
+}
+
+/* 二级标题 — 加粗 */
+.ad-toc-link.ad-toc-h2 {
+  font-weight: 600;
+}
+
+/* 三级标题 — 缩进 + 常规字重 */
+.ad-toc-link.ad-toc-h3 {
+  padding-left: 28px;
+  font-weight: 400;
+}
+
+/* 目录侧边栏滚动条 */
+.ad-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ad-sidebar::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #ddd;
+}
+
+.ad-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ================================================================
+   右侧正文区域
+   ================================================================ */
+
+.ad-main {
+  flex: 1;
+  min-width: 0;
+  padding: 3rem 64px 6rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* 白色卡片容器 */
+.ad-article {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  border: 1px solid #eee;
+  padding: 48px 56px;
+}
+
+/* --- 面包屑 --- */
+.ad-breadcrumb {
+  margin-bottom: 24px;
+}
+
+/* --- 头部额外内容 --- */
+.ad-header-extra {
+  margin-bottom: 32px;
+}
+
+/* --- 标题 h1 --- */
+.ad-title {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1a1a1a;
+  margin: 0 0 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* --- 元信息 --- */
+.ad-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+/* 元信息分隔符 */
+.ad-meta-author::after,
+.ad-meta-date::after {
+  content: "·";
+  margin-left: 16px;
+  color: #ccc;
+}
+
+.ad-meta-reading::after {
+  content: none;
+}
+
+/* --- 摘要 --- */
+.ad-desc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #666;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: #f9f9f6;
+  border-left: 3px solid #e67e22;
+  border-radius: 0 4px 4px 0;
+}
+
+/* --- 标签 --- */
+.ad-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #eee;
+}
+
+.ad-tag {
+  font-size: 12px;
+  color: #888;
+  background: #f5f5f3;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+/* ================================================================
+   正文内容排版（Prose）
+   ================================================================ */
+
+.ad-content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* 隐藏内容中的第一个 h1（页面已有标题） */
+.ad-content > h1:first-child {
+  display: none;
+}
+
+/* h1 */
+.ad-content h1 {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 48px 0 16px;
+  color: #1a1a1a;
+}
+
+/* h2 */
+.ad-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 36px 0 12px;
+  color: #1a1a1a;
+  scroll-margin-top: 80px;
+}
+
+/* h3 */
+.ad-content h3 {
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 28px 0 8px;
+  color: #1a1a1a;
+  scroll-margin-top: 80px;
+}
+
+/* h4 */
+.ad-content h4 {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 24px 0 8px;
+  color: #333;
+  scroll-margin-top: 80px;
+}
+
+/* 段落 */
+.ad-content p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #2c2c2c;
+  margin: 0 0 20px;
+}
+
+/* 链接 */
+.ad-content a {
+  color: #c0392b;
+  text-decoration: underline;
+  text-decoration-color: #e8c8c4;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.ad-content a:hover {
+  text-decoration-color: #c0392b;
+}
+
+/* 粗体 */
+.ad-content strong {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* 引用块 */
+.ad-content blockquote {
+  border-left: 3px solid #e67e22;
+  padding: 8px 0 8px 20px;
+  margin: 24px 0;
+  color: #666;
+  font-style: normal;
+}
+
+.ad-content blockquote p {
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* 列表 */
+.ad-content ul,
+.ad-content ol {
+  margin: 0 0 20px;
+  padding-left: 24px;
+  color: #2c2c2c;
+}
+
+.ad-content li {
+  font-size: 17px;
+  line-height: 1.8;
+  margin-bottom: 4px;
+}
+
+.ad-content li > ul,
+.ad-content li > ol {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* 图片 */
+.ad-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 24px auto;
+  display: block;
+  height: auto;
+}
+
+/* 分割线 */
+.ad-content hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 36px 0;
+}
+
+/* 表格 */
+.ad-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+.ad-content thead {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.ad-content th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.ad-content td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #444;
+}
+
+.ad-content tbody tr:hover td {
+  background: #fafaf8;
+}
+
+/* 行内代码 */
+.ad-content code:not(pre code) {
+  font-size: 0.9em;
+  background: #f5f5f3;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #c0392b;
+  font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+}
+
+/* rehype-autolink-headings 锚点图标 */
+.ad-content h2 .anchor,
+.ad-content h3 .anchor,
+.ad-content h4 .anchor {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+  margin-left: 6px;
+  font-size: 0.85em;
+}
+
+.ad-content h2 .anchor::before,
+.ad-content h3 .anchor::before,
+.ad-content h4 .anchor::before {
+  content: "#";
+  color: #ccc;
+}
+
+.ad-content h2:hover .anchor,
+.ad-content h3:hover .anchor,
+.ad-content h4:hover .anchor {
+  opacity: 1;
+}
+
+/* 代码块（复用现有 .code-block-wrapper 样式，仅做微调） */
+.ad-content pre {
+  margin: 24px 0;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+/* 内嵌图片容器（article 内的独立图） */
+.ad-content figure {
+  margin: 24px 0;
+}
+
+.ad-content figure img {
+  margin: 0 auto;
+}
+
+.ad-content figcaption {
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  margin-top: 8px;
+}
+
+/* --- 底部区域 --- */
+.ad-footer {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid #eee;
+}
+
+/* ================================================================
+   移动端目录（屏幕宽度 < 1024px）
+   ================================================================ */
+
+/* 桌面端隐藏移动目录按钮 */
+.ad-toc-mobile-btn {
+  display: none;
+}
+
+.ad-toc-overlay {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* 隐藏左侧目录 */
+  .ad-sidebar {
+    display: none;
+  }
+
+  /* 正文全宽 */
+  .ad-main {
+    padding: 24px 16px;
+  }
+
+  .ad-article {
+    padding: 32px 24px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .ad-title {
+    font-size: 28px;
+  }
+
+  .ad-content p {
+    font-size: 16px;
+  }
+
+  .ad-content h2 {
+    font-size: 22px;
+  }
+
+  .ad-content h3 {
+    font-size: 18px;
+  }
+
+  /* 移动端目录按钮 — 右下角浮动 */
+  .ad-toc-mobile-btn {
+    display: flex;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 40;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ad-toc-mobile-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .ad-toc-mobile-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* 遮罩层 */
+  .ad-toc-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.3);
+    align-items: flex-end;
+    justify-content: center;
+    animation: adTocFadeIn 0.2s ease;
+  }
+
+  @keyframes adTocFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 抽屉面板 */
+  .ad-toc-drawer {
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 24px 24px 40px;
+    animation: adTocSlideUp 0.25s ease;
+  }
+
+  @keyframes adTocSlideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  /* 抽屉头部 */
+  .ad-toc-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .ad-toc-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #f5f5f5;
+    color: #888;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .ad-toc-close-btn:hover {
+    background: #eee;
+    color: #333;
+  }
+}
+
+/* ================================================================
+   深色模式
+   ================================================================ */
+
+.dark .ad-page {
+  background: #0d1117;
+}
+
+.dark .ad-article {
+  background: #161b22;
+  border-color: #30363d;
+  box-shadow: none;
+}
+
+.dark .ad-title {
+  color: #e6edf3;
+}
+
+.dark .ad-meta {
+  color: #8b949e;
+}
+
+.dark .ad-desc {
+  background: #1c2128;
+  color: #8b949e;
+  border-left-color: #d2991d;
+}
+
+.dark .ad-tag {
+  background: #21262d;
+  color: #8b949e;
+}
+
+.dark .ad-tags {
+  border-bottom-color: #30363d;
+}
+
+.dark .ad-footer {
+  border-top-color: #30363d;
+}
+
+/* 正文深色 */
+.dark .ad-content h1,
+.dark .ad-content h2,
+.dark .ad-content h3,
+.dark .ad-content h4 {
+  color: #e6edf3;
+}
+
+.dark .ad-content p,
+.dark .ad-content li {
+  color: #c9d1d9;
+}
+
+.dark .ad-content strong {
+  color: #e6edf3;
+}
+
+.dark .ad-content a {
+  color: #ff7b72;
+  text-decoration-color: #3d2320;
+}
+
+.dark .ad-content a:hover {
+  text-decoration-color: #ff7b72;
+}
+
+.dark .ad-content blockquote {
+  border-left-color: #d2991d;
+  color: #8b949e;
+}
+
+.dark .ad-content blockquote p {
+  color: #8b949e;
+}
+
+.dark .ad-content code:not(pre code) {
+  background: #21262d;
+  color: #ff7b72;
+}
+
+.dark .ad-content hr {
+  border-top-color: #30363d;
+}
+
+.dark .ad-content table thead {
+  border-bottom-color: #30363d;
+}
+
+.dark .ad-content table td {
+  border-bottom-color: #21262d;
+  color: #8b949e;
+}
+
+.dark .ad-content table th {
+  color: #8b949e;
+}
+
+.dark .ad-content table tbody tr:hover td {
+  background: #1c2128;
+}
+
+/* TOC 深色 */
+.dark .ad-toc-title {
+  color: #8b949e;
+  border-bottom-color: #30363d;
+}
+
+.dark .ad-toc-link {
+  color: #8b949e;
+}
+
+.dark .ad-toc-link:hover {
+  color: #d2991d;
+}
+
+.dark .ad-toc-link.ad-toc-active {
+  color: #ff7b72;
+  border-left-color: #ff7b72;
+  background: rgba(255, 123, 114, 0.06);
+}
+
+.dark .ad-sidebar::-webkit-scrollbar-thumb {
+  background: #30363d;
+}
+
+/* 移动端目录深色 */
+.dark .ad-toc-mobile-btn {
+  background: #30363d;
+}
+
+.dark .ad-toc-drawer {
+  background: #161b22;
+}
+
+.dark .ad-toc-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.dark .ad-toc-close-btn {
+  background: #21262d;
+  color: #8b949e;
+}
+
+.dark .ad-toc-close-btn:hover {
+  background: #30363d;
+  color: #c9d1d9;
 }
 
 
